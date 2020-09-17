@@ -177,7 +177,7 @@ export class MangaDex extends Source {
       }
       else {
         returnObject.moreResults = false
-        return returnObject
+        return createMangaUpdates(returnObject)
       }
     }
 

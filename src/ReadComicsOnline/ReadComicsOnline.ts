@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request } from "paperback-extensions-common"
 
 const READCOMICSONLINE_DOMAIN = 'https://readcomicsonline.ru'

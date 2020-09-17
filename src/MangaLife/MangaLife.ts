@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates } from "paperback-extensions-common"
 
 const ML_DOMAIN = 'https://manga4life.com'

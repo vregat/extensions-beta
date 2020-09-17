@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates } from "paperback-extensions-common"
 
 const MS_DOMAIN = 'https://mangasee123.com'
