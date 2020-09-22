@@ -27,6 +27,11 @@ const bundleSources = async function () {
         for (let file of srcArray) {
             let filePath = file
 
+            if (file == "tests") {
+                console.log("Tests directory, skipping")
+                continue
+            }
+
             // If its a directory
             if (
                 !fs.statSync(path.join(directoryPath, filePath)).isDirectory()
@@ -45,7 +50,7 @@ const bundleSources = async function () {
             promises.push(
                 new Promise((res, rej) => {
                     browserify([finalPath], { standalone: 'Sources' })
-                        .plugin(tsify, { noImplicitAny: true })
+                        .plugin(tsify, {project: "tsconfig.tsify.json"})
                         .bundle()
                         .pipe(source('source.js'))
                         .pipe(gulp.dest(path.join(destDir, file)))

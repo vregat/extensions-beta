@@ -1,4 +1,4 @@
-import { Source, Manga, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, Request, MangaUpdates } from "paperback-extensions-common"
+import { PagedResults, Source, Manga, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, Request, MangaUpdates } from "paperback-extensions-common"
 
 export class MangaDex extends Source {
 
@@ -135,10 +135,10 @@ export class MangaDex extends Source {
     })
   }
 
-  filterUpdatedMangaRequest(ids: string[], time: Date, page: number): Request | null {
-    let metadata = { 'ids': ids, 'referenceTime': time }
+  constructFilterUpdatedMangaRequest(ids: string[], time: Date, page: number) {
+    let metadata = { 'ids': ids, 'referenceTime': time, page: page }
 
-    console.log(`time ${time}, idCount: ${ids.length}, page: ${page}`)
+    console.log(`time ${time}, idCount: ${ids.length}`)
 
     return createRequestObject({
       metadata: metadata,
@@ -155,6 +155,10 @@ export class MangaDex extends Source {
     })
   }
 
+  filterUpdatedMangaRequest(ids: string[], time: Date): Request | null {
+    return this.constructFilterUpdatedMangaRequest(ids, time, 1)
+  }
+
   filterUpdatedManga(data: any, metadata: any): MangaUpdates {
     let $ = this.cheerio.load(data)
 
@@ -162,7 +166,7 @@ export class MangaDex extends Source {
 
     let returnObject: MangaUpdates = {
       'ids': [],
-      'moreResults': true
+      nextPage: this.constructFilterUpdatedMangaRequest(metadata.ids, metadata.referenceTime, metadata.page + 1)
     }
 
     for (let elem of $('.manga-entry').toArray()) {
@@ -176,7 +180,7 @@ export class MangaDex extends Source {
         }
       }
       else {
-        returnObject.moreResults = false
+        returnObject.nextPage = undefined
         return createMangaUpdates(returnObject)
       }
     }
@@ -198,7 +202,7 @@ export class MangaDex extends Source {
 
     let section1 = createHomeSection({ id: 'featured_titles', title: 'FEATURED TITLES' })
     let section2 = createHomeSection({ id: 'new_titles', title: 'NEW TITLES' })
-    let section3 = createHomeSection({ id: 'recently_updated', title: 'RECENTLY UPDATED TITLES' })
+    let section3 = createHomeSection({ id: 'recently_updated', title: 'RECENTLY UPDATED TITLES', view_more: true })
 
     return [
       createHomeSectionRequest({
@@ -230,6 +234,31 @@ export class MangaDex extends Source {
       }
 
       return section
+    })
+  }
+
+  constructGetViewMoreRequest (key: string, page: number) {
+    return createRequestObject({
+      url: 'https://mangadex.org/updates/' + page.toString(),
+      method: 'GET',
+      metadata: {
+        key, page
+      }
+    })
+  }
+
+  getViewMoreRequest(key: string): Request {
+    return this.constructGetViewMoreRequest(key, 1)
+  }
+
+  getViewMoreItems(data: string, key: string, metadata: any): PagedResults {
+    let $ = this.cheerio.load(data)
+
+    let updates = this.parseRecentlyUpdatedMangaSectionTiles($)
+
+    return createPagedResults({
+      results: updates,
+      nextPage: updates.length > 0 ? this.constructGetViewMoreRequest(key, metadata.page + 1) : undefined
     })
   }
 
@@ -339,32 +368,39 @@ export class MangaDex extends Source {
     return updates
   }
 
-  searchRequest(query: SearchRequest, page: number): Request | null {
-    if (page == null) {
-      page = 0
-    }
-
+  constructSearchRequest(query: SearchRequest, page: number) {
     return createRequestObject({
-      url: CACHE_SEARCH + `?page=${page+1}&items=100`,
+      url: CACHE_SEARCH + `?page=${page}&items=100`,
       method: "POST",
       data: JSON.stringify({
         title: query.title
       }),
       headers: {
         "content-type": "application/json"
+      },
+      metadata: {
+        page: page,
+        query: query
       }
     })
   }
 
-  search(data: any, metadata: any): MangaTile[] | null {
+  searchRequest(query: SearchRequest): Request | null {
+    return this.constructSearchRequest(query, 1)
+  }
+
+  search(data: any, metadata: any): PagedResults | null {
     let mangas = this.getMangaDetails(data, {})
-    return mangas.map(manga => createMangaTile({
-      id: manga.id,
-      image: manga.image,
-      title: createIconText({
-        text: manga.titles[0] ?? "UNKNOWN"
-      })
-    }))
+    return createPagedResults({
+      results: mangas.map(manga => createMangaTile({
+        id: manga.id,
+        image: manga.image,
+        title: createIconText({
+          text: manga.titles[0] ?? "UNKNOWN"
+        })
+      })),
+      nextPage: mangas.length > 0 ? this.constructSearchRequest(metadata.query, metadata.page + 1) : undefined
+    })
   }
 
   getMangaShareUrl(mangaId: string) {
