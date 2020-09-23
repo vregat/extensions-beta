@@ -2,14 +2,14 @@
 import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates } from "paperback-extensions-common"
 
 const ML_DOMAIN = 'https://manga4life.com'
-const ML_IMAGE_DOMAIN = 'https://cover.mangabeast01.com/cover'
+let ML_IMAGE_DOMAIN = 'https://cover.mangabeast01.com/cover'
 
 export class MangaLife extends Source {
   constructor(cheerio: CheerioAPI) {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.10' }
+  get version(): string { return '1.1.0' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -38,6 +38,9 @@ export class MangaLife extends Source {
     let json = JSON.parse($('[type=application\\/ld\\+json]').html()?.replace(/\t*\n*/g, '') ?? '')
     let entity = json.mainEntity
     let info = $('.row')
+    let imgSource = ($('.ImgHolder').html()?.match(/src="(.*)\//) ?? [])[1];
+    if (imgSource !== ML_IMAGE_DOMAIN)
+      ML_IMAGE_DOMAIN = imgSource;
     let image = `${ML_IMAGE_DOMAIN}/${metadata.id}.jpg`
     let title = $('h1', info).first().text() ?? ''
     let titles = [title]
@@ -313,10 +316,15 @@ export class MangaLife extends Source {
   }
 
   getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] {
+    let $ = this.cheerio.load(data);
     let hot = (JSON.parse((data.match(/vm.HotUpdateJSON = (.*);/) ?? [])[1])).slice(0, 15)
     let latest = (JSON.parse((data.match(/vm.LatestJSON = (.*);/) ?? [])[1])).slice(0, 15)
     let newTitles = (JSON.parse((data.match(/vm.NewSeriesJSON = (.*);/) ?? [])[1])).slice(0, 15)
     let recommended = JSON.parse((data.match(/vm.RecommendationJSON = (.*);/) ?? [])[1])
+
+    let imgSource = ($('.ImageHolder').html()?.match(/ng-src="(.*)\//) ?? [])[1];
+    if (imgSource !== ML_IMAGE_DOMAIN)
+      ML_IMAGE_DOMAIN = imgSource;
 
     let hotManga: MangaTile[] = []
     hot.forEach((elem: any) => {
