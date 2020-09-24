@@ -202,7 +202,11 @@ export class MangaDex extends Source {
 
     let section1 = createHomeSection({ id: 'featured_titles', title: 'FEATURED TITLES' })
     let section2 = createHomeSection({ id: 'new_titles', title: 'NEW TITLES' })
-    let section3 = createHomeSection({ id: 'recently_updated', title: 'RECENTLY UPDATED TITLES', view_more: true })
+    let section3 = createHomeSection({ 
+      id: 'recently_updated',
+      title: 'RECENTLY UPDATED TITLES',
+      view_more: this.constructGetViewMoreRequest('recently_updated', 1)
+    })
 
     return [
       createHomeSectionRequest({
@@ -245,10 +249,6 @@ export class MangaDex extends Source {
         key, page
       }
     })
-  }
-
-  getViewMoreRequest(key: string): Request {
-    return this.constructGetViewMoreRequest(key, 1)
   }
 
   getViewMoreItems(data: string, key: string, metadata: any): PagedResults {

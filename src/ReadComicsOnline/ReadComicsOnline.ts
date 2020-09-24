@@ -221,7 +221,7 @@ export class ReadComicsOnline extends Source {
   getHomePageSectionRequest(): HomeSectionRequest[] | null {
 
     let request = createRequestObject({ url: `${READCOMICSONLINE_DOMAIN}`, method: 'GET', })
-    let homeSection = createHomeSection({ id: 'latest_comics', title: 'LATEST COMICS', view_more: false })
+    let homeSection = createHomeSection({ id: 'latest_comics', title: 'LATEST COMICS' })
     return [createHomeSectionRequest({ request: request, sections: [homeSection] })]
 
   }
