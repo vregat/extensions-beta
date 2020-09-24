@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { Source, Manga, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, Request, MangaUpdates, MangaStatus, LanguageCode } from "paperback-extensions-common"
+import { Source, Manga, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, Request, MangaUpdates, MangaStatus, LanguageCode, PagedResults } from "paperback-extensions-common"
 
 export class MangaReader extends Source {
 
@@ -7,7 +6,7 @@ export class MangaReader extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.0' }
+  get version(): string { return '1.1.0' }
   get name(): string { return 'MangaReader' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Syn' }
@@ -71,13 +70,13 @@ export class MangaReader extends Source {
     return chapterList
   }
 
-  searchRequest(query: SearchRequest, page: number): Request | null {
+  searchRequest(query: SearchRequest): Request | null {
     return createRequestObject({
       url: "https://www.mangareader.net/search/?nsearch=&msearch=" + encodeURI(query.title ?? ""),
       method: "GET"
     })
   }
-  search(data: any, metadata: any): MangaTile[] | null {
+  search(data: any, metadata: any): PagedResults | null {
     let $ = this.cheerio.load(data)
     let searchResults = $("#ares table tr").toArray()
 
@@ -90,7 +89,10 @@ export class MangaReader extends Source {
       }))
     }
 
-    return mangas
+    //TODO: This source did not include multi-page searching origionally, it still will need added for advanced search methods
+    return createPagedResults({
+      results: mangas
+    })
   }
 
   getChapterDetailsRequest(mangaId: string, chapId: string): Request {

@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates } from "paperback-extensions-common"
+import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates, PagedResults } from "paperback-extensions-common"
 
 const ML_DOMAIN = 'https://manga4life.com'
 let ML_IMAGE_DOMAIN = 'https://cover.mangabeast01.com/cover'
@@ -9,7 +8,7 @@ export class MangaLife extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.0' }
+  get version(): string { return '0.7.0' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -177,7 +176,7 @@ export class MangaLife extends Source {
     return chapterDetails
   }
 
-  filterUpdatedMangaRequest(ids: any, time: Date, page: number): Request {
+  filterUpdatedMangaRequest(ids: any, time: Date): Request {
     let metadata = { 'ids': ids, 'referenceTime': time }
     return createRequestObject({
       url: `${ML_DOMAIN}/`,
@@ -192,8 +191,7 @@ export class MangaLife extends Source {
   filterUpdatedManga(data: any, metadata: any): MangaUpdates {
     let $ = this.cheerio.load(data)
     let returnObject: MangaUpdates = {
-      'ids': [],
-      'moreResults': false
+      'ids': []
     }
     let updateManga = JSON.parse((data.match(/vm.LatestJSON = (.*);/) ?? [])[1])
     updateManga.forEach((elem: any) => {
@@ -203,8 +201,7 @@ export class MangaLife extends Source {
     return createMangaUpdates(returnObject)
   }
 
-  searchRequest(query: SearchRequest, page: number): Request | null {
-    if (page > 1) return null; // Manga4Life retrieves all manga with one request
+  searchRequest(query: SearchRequest): Request | null {
     let status = ""
     switch (query.status) {
       case 0: status = 'Completed'; break
@@ -238,7 +235,7 @@ export class MangaLife extends Source {
     })
   }
 
-  search(data: any, metadata: any): MangaTile[] | null {
+  search(data: any, metadata: any): PagedResults | null {
     let $ = this.cheerio.load(data)
     let mangaTiles: MangaTile[] = []
     let directory = JSON.parse((data.match(/vm.Directory = (.*);/) ?? [])[1])
@@ -281,7 +278,10 @@ export class MangaLife extends Source {
       }
     })
 
-    return mangaTiles
+    // This source parses JSON and never requires additional pages
+    return createPagedResults({
+      results: mangaTiles
+    })
   }
 
   getTagsRequest(): Request | null {
@@ -395,14 +395,14 @@ export class MangaLife extends Source {
   }
 
 
-  getViewMoreRequest(key: string, page: number): Request | null {
+  getViewMoreRequest(key: string): Request | null {
     return createRequestObject({
       url: ML_DOMAIN,
       method: 'GET'
     })
   }
 
-  getViewMoreItems(data: any, key: string): MangaTile[] | null {
+  getViewMoreItems(data: any, key: string): PagedResults | null {
     let manga: MangaTile[] = []
     if (key == 'hot_update') {
       let hot = JSON.parse((data.match(/vm.HotUpdateJSON = (.*);/) ?? [])[1])
@@ -458,6 +458,10 @@ export class MangaLife extends Source {
       })
     }
     else return null
-    return manga
+
+    // This source parses JSON and never requires additional pages
+    return createPagedResults({
+      results: manga
+    })
   }
 }

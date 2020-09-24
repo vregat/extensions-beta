@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request } from "paperback-extensions-common"
+import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, PagedResults } from "paperback-extensions-common"
 
 const READCOMICSONLINE_DOMAIN = 'https://readcomicsonline.ru'
 
@@ -8,7 +7,7 @@ export class ReadComicsOnline extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.1.2' }
+  get version(): string { return '0.2.0' }
   get name(): string { return 'ReadComicsOnline' }
   get description(): string { return 'Extension that pulls western comics from ReadComicsOnline.ru' }
   get author(): string { return 'Conrad Weiser' }
@@ -179,7 +178,7 @@ export class ReadComicsOnline extends Source {
   }
 
 
-  searchRequest(query: SearchRequest, page: number): Request | null {
+  searchRequest(query: SearchRequest): Request | null {
 
     query.title = query.title?.replace(" ", "+")
     let metadata = {searchQuery: query.title}
@@ -192,7 +191,7 @@ export class ReadComicsOnline extends Source {
     })
   }
 
-  search(data: any, metadata: any): MangaTile[] {
+  search(data: any, metadata: any): PagedResults {
 
     let mangaTiles: MangaTile[] = []
 
@@ -212,7 +211,10 @@ export class ReadComicsOnline extends Source {
         }
     }
 
-    return mangaTiles
+    // Because we're reading JSON, there will never be another page to search through
+    return createPagedResults({
+      results: mangaTiles
+    })
 
   }
 

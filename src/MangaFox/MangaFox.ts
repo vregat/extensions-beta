@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
     Chapter,
     ChapterDetails,
@@ -12,7 +11,8 @@ import {
     Request,
     SearchRequest,
     Source,
-    TagSection
+    TagSection,
+    PagedResults
 } from "paperback-extensions-common"
 
 const MF_DOMAIN = 'https://fanfox.net'
@@ -24,7 +24,7 @@ export class MangaFox extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '1.1.4' }
+    get version(): string { return '1.2.0' }
 
     get name(): string { return 'MangaFox' }
 
@@ -273,7 +273,7 @@ export class MangaFox extends Source {
         return sections
     }
 
-    searchRequest(query: SearchRequest, page: number): Request | null {
+    searchRequest(query: SearchRequest): Request | null {
         let genres = (query.includeGenre ?? []).join(',');
         let excluded = (query.excludeGenre ?? []).join(',,');
         let type = (query.includeFormat ?? [])[0];
@@ -302,7 +302,7 @@ export class MangaFox extends Source {
         });
     }
 
-    search(data: any, metadata: any): MangaTile[] | null {
+    search(data: any, metadata: any): PagedResults | null {
         let $ = this.cheerio.load(data);
 
         let mangas: MangaTile[] = [];
@@ -328,7 +328,9 @@ export class MangaFox extends Source {
 
         });
 
-        return mangas;
+        return createPagedResults({
+            results: mangas
+        });
     }
 
     getMangaShareUrl(mangaId: string) {
@@ -336,10 +338,10 @@ export class MangaFox extends Source {
     }
 
 
-    filterUpdatedMangaRequest(ids: any, time: Date, page: number): Request | null {
-        let metadata = {ids: ids, targetDate: time}
+    filterUpdatedMangaRequest(ids: any, time: Date): Request | null {
+        let metadata = {ids: ids, targetDate: time, page: 1}
         return createRequestObject({
-            url: `${MF_DOMAIN}/releases/${page}.html`,
+            url: `${MF_DOMAIN}/releases/1.html`,
             method: 'GET',
             metadata: metadata,
             cookies: [createCookie({name: 'isAdult', value: '1', domain: MF_DOMAIN})]
@@ -378,7 +380,26 @@ export class MangaFox extends Source {
             }
         }
 
-        return createMangaUpdates({ids: updatedManga, moreResults: nextPage})
+        // If we are not on the last available page, create a request to scan to the next
+        let pagerElements = $('a', $('.pager-list-left')).toArray()
+        if(Number($(pagerElements[pagerElements.length - 1]).attr('href')?.replace('/releases/', '').replace('.html', '')) > metadata.page) {
+
+            metadata.page = metadata.page++
+
+            let request = createRequestObject({
+                url: `${MF_DOMAIN}/releases/${metadata.page}.html`,
+                method: 'GET',
+                metadata: metadata,
+                cookies: [createCookie({name: 'isAdult', value: '1', domain: MF_DOMAIN})]
+            })
+
+            return createMangaUpdates({
+                ids: updatedManga,
+                nextPage: request
+            })
+        }
+
+        return createMangaUpdates({ids: updatedManga})
     }
 
     parseDate(date: string): Date {

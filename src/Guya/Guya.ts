@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   Source,
   Manga,
@@ -12,6 +11,7 @@ import {
   LanguageCode,
   MangaStatus,
   MangaUpdates,
+  PagedResults
 } from "paperback-extensions-common";
 
 const GUYA_API_BASE = "https://guya.moe";
@@ -142,7 +142,7 @@ export class Guya extends Source {
     });
   }
 
-  searchRequest(query: SearchRequest, page: number): Request | null {
+  searchRequest(query: SearchRequest): Request | null {
     return createRequestObject({
       metadata: { query: query.title },
       url: GUYA_ALL_SERIES_API,
@@ -150,7 +150,7 @@ export class Guya extends Source {
     });
   }
 
-  search(data: any, metadata: any): MangaTile[] | null {
+  search(data: any, metadata: any): PagedResults | null {
     let result = typeof data === "string" ? JSON.parse(data) : data;
     let query = metadata["query"].toLowerCase();
 
@@ -158,7 +158,7 @@ export class Guya extends Source {
       e.toLowerCase().includes(query)
     );
 
-    return filteredResults.map((series) => {
+    let tiles =  filteredResults.map((series) => {
       let seriesMetadata = result[series];
       return createMangaTile({
         id: seriesMetadata["slug"],
@@ -166,6 +166,10 @@ export class Guya extends Source {
         title: createIconText({ text: series }),
       });
     });
+
+    return createPagedResults({
+      results: tiles
+    })
   }
 
   getHomePageSectionRequest(): HomeSectionRequest[] | null {
@@ -205,8 +209,7 @@ export class Guya extends Source {
 
   filterUpdatedMangaRequest(
     ids: string[],
-    time: Date,
-    page: number
+    time: Date
   ): Request | null {
     let metadata = { ids: ids, referenceTime: time };
 
@@ -233,7 +236,7 @@ export class Guya extends Source {
         ids.push(series);
       }
     }
-    return createMangaUpdates({ ids, moreResults });
+    return createMangaUpdates({ ids });
   }
 
   getMangaShareUrl(mangaId: string) {
