@@ -2619,7 +2619,7 @@ class HanaScans extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.2.3'; }
+    get version() { return '0.3.0'; }
     get name() { return 'HanaScan'; }
     get description() { return 'Contains RAW manga primarily (Japanese text)'; }
     get author() { return 'Various Developers'; }
@@ -2628,6 +2628,9 @@ class HanaScans extends paperback_extensions_common_1.Source {
     get hentaiSource() { return false; }
     getMangaShareUrl(mangaId) { return `${HS_DOMAIN}/${mangaId}.html`; }
     get sourceTags() { return [{ text: "raw", type: paperback_extensions_common_1.TagType.INFO }]; }
+    get rateLimit() {
+        return 2;
+    }
     getMangaDetailsRequest(ids) {
         let requests = [];
         for (let id of ids) {

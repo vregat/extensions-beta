@@ -2624,7 +2624,7 @@ class Guya extends paperback_extensions_common_1.Source {
         super(cheerio);
     }
     get version() {
-        return "1.0.0";
+        return "1.0.1";
     }
     get name() {
         return "Guya";
@@ -2646,6 +2646,9 @@ class Guya extends paperback_extensions_common_1.Source {
     }
     get hentaiSource() {
         return false;
+    }
+    get rateLimit() {
+        return 2;
     }
     getMangaDetailsRequest(empty) {
         return [

@@ -2620,7 +2620,7 @@ class Manganelo extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.1.6'; }
+    get version() { return '1.1.7'; }
     get name() { return 'Manganelo'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2628,6 +2628,9 @@ class Manganelo extends paperback_extensions_common_1.Source {
     get description() { return 'Extension that pulls manga from Manganelo, includes Advanced Search and Updated manga fetching'; }
     get hentaiSource() { return false; }
     getMangaShareUrl(mangaId) { return `${MN_DOMAIN}/manga/${mangaId}`; }
+    get rateLimit() {
+        return 2;
+    }
     getMangaDetailsRequest(ids) {
         let requests = [];
         for (let id of ids) {

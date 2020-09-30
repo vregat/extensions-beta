@@ -2620,7 +2620,7 @@ class MangaFox extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.2.0'; }
+    get version() { return '1.2.1'; }
     get name() { return 'MangaFox'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Sirus'; }
@@ -2628,6 +2628,9 @@ class MangaFox extends paperback_extensions_common_1.Source {
     get description() { return 'Extension that pulls manga from MangaFox, includes Advanced Search and Updated manga fetching'; }
     get hentaiSource() {
         return false;
+    }
+    get rateLimit() {
+        return 2;
     }
     getMangaDetailsRequest(ids) {
         let requests = [];

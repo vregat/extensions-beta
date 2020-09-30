@@ -2620,7 +2620,7 @@ class MangaLife extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.7.0'; }
+    get version() { return '0.7.1'; }
     get name() { return 'Manga4Life'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2628,6 +2628,9 @@ class MangaLife extends paperback_extensions_common_1.Source {
     get description() { return 'Extension that pulls manga from MangaLife, includes Advanced Search and Updated manga fetching'; }
     get hentaiSource() { return false; }
     getMangaShareUrl(mangaId) { return `${ML_DOMAIN}/manga/${mangaId}`; }
+    get rateLimit() {
+        return 2;
+    }
     getMangaDetailsRequest(ids) {
         let requests = [];
         for (let id of ids) {
