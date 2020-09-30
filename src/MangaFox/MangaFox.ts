@@ -24,7 +24,7 @@ export class MangaFox extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '1.2.0' }
+    get version(): string { return '1.2.1' }
 
     get name(): string { return 'MangaFox' }
 
@@ -39,6 +39,10 @@ export class MangaFox extends Source {
     get hentaiSource(): boolean {
         return false
     }
+
+    get rateLimit(): Number {
+        return 2
+      }
 
     getMangaDetailsRequest(ids: string[]): Request[] {
         let requests: Request[] = []

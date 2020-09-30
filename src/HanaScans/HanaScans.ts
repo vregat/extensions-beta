@@ -6,7 +6,7 @@ export class HanaScans extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.2.3' }
+  get version(): string { return '0.3.0' }
   get name(): string { return 'HanaScan' }
   get description(): string { return 'Contains RAW manga primarily (Japanese text)' }
   get author(): string { return 'Various Developers' }
@@ -15,6 +15,9 @@ export class HanaScans extends Source {
   get hentaiSource(): boolean { return false }
   getMangaShareUrl(mangaId: string): string | null { return `${HS_DOMAIN}/${mangaId}.html` }
   get sourceTags(): SourceTag[] { return [{ text: "raw", type: TagType.INFO }] }
+  get rateLimit(): Number {
+    return 2
+  }
 
 
 

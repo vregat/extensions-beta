@@ -8,7 +8,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.6' }
+  get version(): string { return '1.1.7' }
 
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
@@ -17,6 +17,9 @@ export class Manganelo extends Source {
   get description(): string { return 'Extension that pulls manga from Manganelo, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
   getMangaShareUrl(mangaId: string): string | null { return `${MN_DOMAIN}/manga/${mangaId}` }
+  get rateLimit(): Number {
+    return 2
+  }
 
 
   getMangaDetailsRequest(ids: string[]): Request[] {

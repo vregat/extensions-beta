@@ -8,7 +8,7 @@ export class Mangasee extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.2.0' }
+  get version(): string { return '1.2.1' }
   get name(): string { return 'Mangasee' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -16,6 +16,9 @@ export class Mangasee extends Source {
   get description(): string { return 'Extension that pulls manga from MangaLife, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
   getMangaShareUrl(mangaId: string): string | null { return `${MS_DOMAIN}/manga/${mangaId}` }
+  get rateLimit(): Number {
+    return 2
+  }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     let requests: Request[] = []
