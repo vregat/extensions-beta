@@ -26,7 +26,7 @@ export class Guya extends Source {
   }
 
   get version(): string {
-    return "1.0.0";
+    return "1.0.1";
   }
   get name(): string {
     return "Guya";
@@ -48,6 +48,9 @@ export class Guya extends Source {
   }
   get hentaiSource(): boolean {
     return false;
+  }
+  get rateLimit(): Number {
+    return 2
   }
 
   getMangaDetailsRequest(empty: string[]): Request[] {

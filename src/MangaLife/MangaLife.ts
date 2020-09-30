@@ -8,7 +8,7 @@ export class MangaLife extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7.0' }
+  get version(): string { return '0.7.1' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -16,6 +16,9 @@ export class MangaLife extends Source {
   get description(): string { return 'Extension that pulls manga from MangaLife, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
   getMangaShareUrl(mangaId: string): string | null { return `${ML_DOMAIN}/manga/${mangaId}` }
+  get rateLimit(): Number {
+    return 2
+  }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     let requests: Request[] = []
