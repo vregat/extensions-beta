@@ -866,7 +866,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this,require('_process'))
-},{"./adapters/http":2,"./adapters/xhr":2,"./helpers/normalizeHeaderName":23,"./utils":26,"_process":46}],17:[function(require,module,exports){
+},{"./adapters/http":2,"./adapters/xhr":2,"./helpers/normalizeHeaderName":23,"./utils":26,"_process":56}],17:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -1565,6 +1565,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.APIWrapper = void 0;
 // Import the global wrapper for all the models
 require("./models/impl_export");
 // import axios from 'axios'  <- use this when you've fixed the typings
@@ -1894,9 +1895,10 @@ class APIWrapper {
 }
 exports.APIWrapper = APIWrapper;
 
-},{"./models/impl_export":44,"axios":1}],28:[function(require,module,exports){
+},{"./models/impl_export":54,"axios":1}],28:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Madara = void 0;
 const Source_1 = require("./Source");
 const Manga_1 = require("../models/Manga");
 class Madara extends Source_1.Source {
@@ -2023,7 +2025,7 @@ class Madara extends Source_1.Source {
         let $ = this.cheerio.load(data);
         let pageElements = $(this.pageListSelector);
         for (let page of pageElements.toArray()) {
-            pages.push(((_a = $(page)) === null || _a === void 0 ? void 0 : _a.find("img")).first().attr(this.pageImageAttr).trim());
+            pages.push((_a = $(page)) === null || _a === void 0 ? void 0 : _a.find("img").first().attr(this.pageImageAttr).trim());
         }
         let chapterDetails = createChapterDetails({
             id: metadata.chapterId,
@@ -2081,13 +2083,14 @@ class Madara extends Source_1.Source {
 }
 exports.Madara = Madara;
 
-},{"../models/Manga":37,"./Source":29}],29:[function(require,module,exports){
+},{"../models/Manga":41,"./Source":29}],29:[function(require,module,exports){
 "use strict";
 /**
  * Request objects hold information for a particular source (see sources for example)
  * This allows us to to use a generic api to make the calls against any source
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Source = void 0;
 class Source {
     constructor(cheerio) {
         this.cheerio = cheerio;
@@ -2106,14 +2109,15 @@ class Source {
      */
     get sourceTags() { return []; }
     // <-----------        OPTIONAL METHODS        -----------> //
+    requestModifier(request) { return request; }
+    getMangaShareUrl(mangaId) { return null; }
+    getCloudflareBypassRequest() { return null; }
     /**
      * Returns the number of calls that can be done per second from the application
      * This is to avoid IP bans from many of the sources
      * Can be adjusted per source since different sites have different limits
      */
     get rateLimit() { return 2; }
-    requestModifier(request) { return request; }
-    getMangaShareUrl(mangaId) { return null; }
     /**
      * (OPTIONAL METHOD) Different sources have different tags available for searching. This method
      * should target a URL which allows you to parse apart all of the available tags which a website has.
@@ -2210,24 +2214,38 @@ exports.Source = Source;
 
 },{}],30:[function(require,module,exports){
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./Madara"));
-__export(require("./Source"));
+__exportStar(require("./Madara"), exports);
+__exportStar(require("./Source"), exports);
 
 },{"./Madara":28,"./Source":29}],31:[function(require,module,exports){
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./base"));
-__export(require("./models"));
-__export(require("./APIWrapper"));
+__exportStar(require("./base"), exports);
+__exportStar(require("./models"), exports);
+__exportStar(require("./APIWrapper"), exports);
 
-},{"./APIWrapper":27,"./base":30,"./models":45}],32:[function(require,module,exports){
+},{"./APIWrapper":27,"./base":30,"./models":55}],32:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2238,6 +2256,10 @@ _global.createChapter = function (chapter) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],33:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+
+},{}],34:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2247,7 +2269,11 @@ _global.createChapterDetails = function (chapterDetails) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],36:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],37:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2260,9 +2286,12 @@ _global.createHomeSectionRequest = function (homeRequestObject) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],35:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.LanguageCode = void 0;
 var LanguageCode;
 (function (LanguageCode) {
     LanguageCode["UNKNOWN"] = "_unknown";
@@ -2307,7 +2336,7 @@ var LanguageCode;
     LanguageCode["VIETNAMESE"] = "vn";
 })(LanguageCode = exports.LanguageCode || (exports.LanguageCode = {}));
 
-},{}],36:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2317,16 +2346,17 @@ _global.createManga = function (manga) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],37:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MangaStatus = void 0;
 var MangaStatus;
 (function (MangaStatus) {
     MangaStatus[MangaStatus["ONGOING"] = 1] = "ONGOING";
     MangaStatus[MangaStatus["COMPLETED"] = 0] = "COMPLETED";
 })(MangaStatus = exports.MangaStatus || (exports.MangaStatus = {}));
 
-},{}],38:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2339,7 +2369,11 @@ _global.createIconText = function (iconText) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],39:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],44:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],45:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2349,7 +2383,9 @@ _global.createPagedResults = function (update) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],40:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],47:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2362,7 +2398,9 @@ _global.createRequestObject = function (requestObject) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],41:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],49:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2372,9 +2410,12 @@ _global.createSearchRequest = function (searchRequest) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],42:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],51:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TagType = void 0;
 /**
  * An enumerator which {@link SourceTags} uses to define the color of the tag rendered on the website.
  * Info is blue, success is green, warning is yellow and danger is red.
@@ -2387,7 +2428,7 @@ var TagType;
     TagType["DANGER"] = "danger";
 })(TagType = exports.TagType || (exports.TagType = {}));
 
-},{}],43:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 (function (global){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2400,7 +2441,9 @@ _global.createTag = function (tag) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],44:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],54:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./Chapter/_impl");
@@ -2413,17 +2456,34 @@ require("./SearchRequest/_impl");
 require("./TagSection/_impl");
 require("./PagedResults/_impl");
 
-},{"./Chapter/_impl":32,"./ChapterDetails/_impl":33,"./HomeSection/_impl":34,"./Manga/_impl":36,"./MangaTile/_impl":38,"./PagedResults/_impl":39,"./RequestObject/_impl":40,"./SearchRequest/_impl":41,"./TagSection/_impl":43}],45:[function(require,module,exports){
+},{"./Chapter/_impl":32,"./ChapterDetails/_impl":34,"./HomeSection/_impl":37,"./Manga/_impl":40,"./MangaTile/_impl":42,"./PagedResults/_impl":45,"./RequestObject/_impl":47,"./SearchRequest/_impl":49,"./TagSection/_impl":52}],55:[function(require,module,exports){
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./Manga"));
-__export(require("./SourceTag"));
-__export(require("./Languages"));
+__exportStar(require("./Chapter"), exports);
+__exportStar(require("./ChapterDetails"), exports);
+__exportStar(require("./HomeSection"), exports);
+__exportStar(require("./Manga"), exports);
+__exportStar(require("./MangaTile"), exports);
+__exportStar(require("./RequestObject"), exports);
+__exportStar(require("./SearchRequest"), exports);
+__exportStar(require("./TagSection"), exports);
+__exportStar(require("./SourceTag"), exports);
+__exportStar(require("./Languages"), exports);
+__exportStar(require("./Constants"), exports);
+__exportStar(require("./MangaUpdate"), exports);
+__exportStar(require("./PagedResults"), exports);
 
-},{"./Languages":35,"./Manga":37,"./SourceTag":42}],46:[function(require,module,exports){
+},{"./Chapter":33,"./ChapterDetails":35,"./Constants":36,"./HomeSection":38,"./Languages":39,"./Manga":41,"./MangaTile":43,"./MangaUpdate":44,"./PagedResults":46,"./RequestObject":48,"./SearchRequest":50,"./SourceTag":51,"./TagSection":53}],56:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2609,7 +2669,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],47:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Guya = void 0;
@@ -2802,5 +2862,5 @@ class Guya extends paperback_extensions_common_1.Source {
 }
 exports.Guya = Guya;
 
-},{"paperback-extensions-common":31}]},{},[47])(47)
+},{"paperback-extensions-common":31}]},{},[57])(57)
 });
