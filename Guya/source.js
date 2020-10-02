@@ -2684,7 +2684,7 @@ class Guya extends paperback_extensions_common_1.Source {
         super(cheerio);
     }
     get version() {
-        return "1.0.1";
+        return "1.0.2";
     }
     get name() {
         return "Guya";
@@ -2710,6 +2710,7 @@ class Guya extends paperback_extensions_common_1.Source {
     get rateLimit() {
         return 2;
     }
+    get websiteBaseURL() { return GUYA_API_BASE; }
     getMangaDetailsRequest(empty) {
         return [
             createRequestObject({

@@ -2678,13 +2678,14 @@ class MangaDex extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.0.20'; }
+    get version() { return '1.0.30'; }
     get name() { return 'MangaDex'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Faizan Durrani'; }
     get authorWebsite() { return 'https://github.com/FaizanDurrani'; }
     get description() { return 'Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching'; }
     get hentaiSource() { return false; }
+    get websiteBaseURL() { return 'https://mangadex.org'; }
     get rateLimit() { return 1; }
     getMangaDetailsRequest(ids) {
         return [createRequestObject({

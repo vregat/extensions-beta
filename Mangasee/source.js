@@ -2680,7 +2680,7 @@ class Mangasee extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.2.1'; }
+    get version() { return '1.2.2'; }
     get name() { return 'Mangasee'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2688,6 +2688,7 @@ class Mangasee extends paperback_extensions_common_1.Source {
     get description() { return 'Extension that pulls manga from MangaLife, includes Advanced Search and Updated manga fetching'; }
     get hentaiSource() { return false; }
     getMangaShareUrl(mangaId) { return `${MS_DOMAIN}/manga/${mangaId}`; }
+    get websiteBaseURL() { return MS_DOMAIN; }
     get rateLimit() {
         return 2;
     }

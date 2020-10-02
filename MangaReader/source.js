@@ -2679,13 +2679,14 @@ class MangaReader extends paperback_extensions_common_1.Source {
         super(cheerio);
         this.mainUrl = "https://mangareader.net";
     }
-    get version() { return '1.1.1'; }
+    get version() { return '1.1.2'; }
     get name() { return 'MangaReader'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Syn'; }
     get authorWebsite() { return 'https://github.com/Synstress'; }
     get description() { return 'Extension that pulls manga from MangReader, includes Advanced Search and Updated manga fetching'; }
     get hentaiSource() { return false; }
+    get websiteBaseURL() { return 'https://mangareader.net'; }
     get rateLimit() { return 100; }
     getCloudflareBypassRequest() {
         return createRequestObject({

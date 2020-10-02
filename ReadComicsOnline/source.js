@@ -2679,7 +2679,7 @@ class ReadComicsOnline extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.2.1'; }
+    get version() { return '0.2.2'; }
     get name() { return 'ReadComicsOnline'; }
     get description() { return 'Extension that pulls western comics from ReadComicsOnline.ru'; }
     get author() { return 'Conrad Weiser'; }
@@ -2687,6 +2687,7 @@ class ReadComicsOnline extends paperback_extensions_common_1.Source {
     get icon() { return "logo.png"; } // The website has SVG versions, I had to find one off of a different source
     get hentaiSource() { return false; }
     getMangaShareUrl(mangaId) { return `${READCOMICSONLINE_DOMAIN}/comic/${mangaId}`; }
+    get websiteBaseURL() { return READCOMICSONLINE_DOMAIN; }
     get rateLimit() {
         return 2;
     }
