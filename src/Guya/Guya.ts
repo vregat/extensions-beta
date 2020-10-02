@@ -26,7 +26,7 @@ export class Guya extends Source {
   }
 
   get version(): string {
-    return "1.0.1";
+    return "1.0.2";
   }
   get name(): string {
     return "Guya";
@@ -52,6 +52,8 @@ export class Guya extends Source {
   get rateLimit(): Number {
     return 2
   }
+
+  get websiteBaseURL(): string { return GUYA_API_BASE }
 
   getMangaDetailsRequest(empty: string[]): Request[] {
     return [

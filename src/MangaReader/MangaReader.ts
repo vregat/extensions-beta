@@ -6,13 +6,14 @@ export class MangaReader extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.1' }
+  get version(): string { return '1.1.2' }
   get name(): string { return 'MangaReader' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Syn' }
   get authorWebsite(): string { return 'https://github.com/Synstress' }
   get description(): string { return 'Extension that pulls manga from MangReader, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
+  get websiteBaseURL(): string { return 'https://mangareader.net' }
 
   get rateLimit() { return 100 }
 

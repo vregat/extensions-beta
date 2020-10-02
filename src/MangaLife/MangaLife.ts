@@ -4,11 +4,12 @@ const ML_DOMAIN = 'https://manga4life.com'
 let ML_IMAGE_DOMAIN = 'https://cover.mangabeast01.com/cover'
 
 export class MangaLife extends Source {
+
   constructor(cheerio: CheerioAPI) {
     super(cheerio)
   }
 
-  get version(): string { return '0.7.1' }
+  get version(): string { return '0.7.2' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -16,9 +17,8 @@ export class MangaLife extends Source {
   get description(): string { return 'Extension that pulls manga from MangaLife, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
   getMangaShareUrl(mangaId: string): string | null { return `${ML_DOMAIN}/manga/${mangaId}` }
-  get rateLimit(): Number {
-    return 2
-  }
+  get rateLimit(): Number { return 2 }
+  get websiteBaseURL(): string { return ML_DOMAIN }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     let requests: Request[] = []

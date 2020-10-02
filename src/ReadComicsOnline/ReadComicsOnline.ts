@@ -7,7 +7,7 @@ export class ReadComicsOnline extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.2.1' }
+  get version(): string { return '0.2.2' }
   get name(): string { return 'ReadComicsOnline' }
   get description(): string { return 'Extension that pulls western comics from ReadComicsOnline.ru' }
   get author(): string { return 'Conrad Weiser' }
@@ -15,6 +15,7 @@ export class ReadComicsOnline extends Source {
   get icon(): string { return "logo.png" } // The website has SVG versions, I had to find one off of a different source
   get hentaiSource(): boolean { return false }
   getMangaShareUrl(mangaId: string): string | null { return `${READCOMICSONLINE_DOMAIN}/comic/${mangaId}`}
+  get websiteBaseURL(): string { return READCOMICSONLINE_DOMAIN }
   get rateLimit(): Number {
     return 2
   }
