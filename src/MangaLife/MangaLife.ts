@@ -9,7 +9,7 @@ export class MangaLife extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7.2' }
+  get version(): string { return '0.8.0' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -308,12 +308,22 @@ export class MangaLife extends Source {
     return tagSections
   }
 
+  constructGetViewMoreRequest(key: string) {
+    return createRequestObject({
+      url: `${ML_DOMAIN}`,
+      method: 'GET',
+      metadata: {
+        key
+      }
+    })
+  }
+
   getHomePageSectionRequest(): HomeSectionRequest[] | null {
     let request = createRequestObject({ url: `${ML_DOMAIN}`, method: 'GET' })
-    let section1 = createHomeSection({ id: 'hot_update', title: 'HOT UPDATES' })
-    let section2 = createHomeSection({ id: 'latest', title: 'LATEST UPDATES' })
-    let section3 = createHomeSection({ id: 'new_titles', title: 'NEW TITLES' })
-    let section4 = createHomeSection({ id: 'recommended', title: 'RECOMMENDATIONS' })
+    let section1 = createHomeSection({ id: 'hot_update', title: 'HOT UPDATES', view_more: this.constructGetViewMoreRequest('hot_update') })
+    let section2 = createHomeSection({ id: 'latest', title: 'LATEST UPDATES', view_more: this.constructGetViewMoreRequest('latest') })
+    let section3 = createHomeSection({ id: 'new_titles', title: 'NEW TITLES', view_more: this.constructGetViewMoreRequest('new_titles') })
+    let section4 = createHomeSection({ id: 'recommended', title: 'RECOMMENDATIONS', view_more: this.constructGetViewMoreRequest('recommended') })
 
     return [createHomeSectionRequest({ request: request, sections: [section1, section2, section3, section4] })]
   }
@@ -427,6 +437,24 @@ export class MangaLife extends Source {
     }
     else if (key == 'latest') {
       let latest = JSON.parse((data.match(/vm.LatestJSON = (.*);/) ?? [])[1])
+      latest.forEach((elem: any) => {
+        let id = elem.IndexName
+        let title = elem.SeriesName
+        let image = `${ML_IMAGE_DOMAIN}/${id}.jpg`
+        let time = (new Date(elem.Date)).toDateString()
+        time = time.slice(0, time.length - 5)
+        time = time.slice(4, time.length)
+
+        manga.push(createMangaTile({
+          id: id,
+          image: image,
+          title: createIconText({ text: title }),
+          secondaryText: createIconText({ text: time, icon: 'clock.fill' })
+        }))
+      })
+    }
+    else if (key == 'recommended') {
+      let latest = JSON.parse((data.match(/vm.RecommendationJSON = (.*);/) ?? [])[1])
       latest.forEach((elem: any) => {
         let id = elem.IndexName
         let title = elem.SeriesName
