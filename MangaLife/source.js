@@ -2680,7 +2680,7 @@ class MangaLife extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.7.2'; }
+    get version() { return '0.8.0'; }
     get name() { return 'Manga4Life'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2961,12 +2961,21 @@ class MangaLife extends paperback_extensions_common_1.Source {
         tagSections[1].tags = types.map((e) => createTag({ id: e, label: e }));
         return tagSections;
     }
+    constructGetViewMoreRequest(key) {
+        return createRequestObject({
+            url: `${ML_DOMAIN}`,
+            method: 'GET',
+            metadata: {
+                key
+            }
+        });
+    }
     getHomePageSectionRequest() {
         let request = createRequestObject({ url: `${ML_DOMAIN}`, method: 'GET' });
-        let section1 = createHomeSection({ id: 'hot_update', title: 'HOT UPDATES' });
-        let section2 = createHomeSection({ id: 'latest', title: 'LATEST UPDATES' });
-        let section3 = createHomeSection({ id: 'new_titles', title: 'NEW TITLES' });
-        let section4 = createHomeSection({ id: 'recommended', title: 'RECOMMENDATIONS' });
+        let section1 = createHomeSection({ id: 'hot_update', title: 'HOT UPDATES', view_more: this.constructGetViewMoreRequest('hot_update') });
+        let section2 = createHomeSection({ id: 'latest', title: 'LATEST UPDATES', view_more: this.constructGetViewMoreRequest('latest') });
+        let section3 = createHomeSection({ id: 'new_titles', title: 'NEW TITLES', view_more: this.constructGetViewMoreRequest('new_titles') });
+        let section4 = createHomeSection({ id: 'recommended', title: 'RECOMMENDATIONS', view_more: this.constructGetViewMoreRequest('recommended') });
         return [createHomeSectionRequest({ request: request, sections: [section1, section2, section3, section4] })];
     }
     getHomePageSections(data, sections) {
@@ -3045,7 +3054,7 @@ class MangaLife extends paperback_extensions_common_1.Source {
         });
     }
     getViewMoreItems(data, key) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         let manga = [];
         if (key == 'hot_update') {
             let hot = JSON.parse(((_a = data.match(/vm.HotUpdateJSON = (.*);/)) !== null && _a !== void 0 ? _a : [])[1]);
@@ -3081,8 +3090,25 @@ class MangaLife extends paperback_extensions_common_1.Source {
                 }));
             });
         }
+        else if (key == 'recommended') {
+            let latest = JSON.parse(((_c = data.match(/vm.RecommendationJSON = (.*);/)) !== null && _c !== void 0 ? _c : [])[1]);
+            latest.forEach((elem) => {
+                let id = elem.IndexName;
+                let title = elem.SeriesName;
+                let image = `${ML_IMAGE_DOMAIN}/${id}.jpg`;
+                let time = (new Date(elem.Date)).toDateString();
+                time = time.slice(0, time.length - 5);
+                time = time.slice(4, time.length);
+                manga.push(createMangaTile({
+                    id: id,
+                    image: image,
+                    title: createIconText({ text: title }),
+                    secondaryText: createIconText({ text: time, icon: 'clock.fill' })
+                }));
+            });
+        }
         else if (key == 'new_titles') {
-            let newTitles = JSON.parse(((_c = data.match(/vm.NewSeriesJSON = (.*);/)) !== null && _c !== void 0 ? _c : [])[1]);
+            let newTitles = JSON.parse(((_d = data.match(/vm.NewSeriesJSON = (.*);/)) !== null && _d !== void 0 ? _d : [])[1]);
             newTitles.forEach((elem) => {
                 let id = elem.IndexName;
                 let title = elem.SeriesName;
