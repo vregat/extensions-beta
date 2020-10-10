@@ -7,7 +7,8 @@
     "start": "tsc && node dist/api.js",
     "build": "tsc",
     "test": "node_modules/.bin/mocha --timeout 300000 -r ts-node/register src/**/*.test.ts",
-    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test"
+    "coverage": "nyc -r lcov -e .ts -x \"*.test.ts\" npm run test",
+    "server": "tsc && gulp bundle && cd bundles && py -m http.server"
   },
   "author": "",
   "license": "ISC",
