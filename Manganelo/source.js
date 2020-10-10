@@ -2673,14 +2673,13 @@ process.umask = function() { return 0; };
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Manganelo = void 0;
-// @ts-nocheck
 const paperback_extensions_common_1 = require("paperback-extensions-common");
 const MN_DOMAIN = 'https://manganelo.com';
 class Manganelo extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.1.8'; }
+    get version() { return '1.2.0'; }
     get name() { return 'Manganelo'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2840,8 +2839,8 @@ class Manganelo extends paperback_extensions_common_1.Source {
         });
         return chapterDetails;
     }
-    filterUpdatedMangaRequest(ids, time, page) {
-        let metadata = { 'ids': ids, 'referenceTime': time };
+    filterUpdatedMangaRequest(ids, time) {
+        let metadata = { 'ids': ids, 'referenceTime': time, page: 1 };
         return createRequestObject({
             url: `${MN_DOMAIN}/genre-all/`,
             method: 'GET',
@@ -2849,15 +2848,15 @@ class Manganelo extends paperback_extensions_common_1.Source {
             headers: {
                 "content-type": "application/x-www-form-urlencoded"
             },
-            param: `${page}`
+            param: `${metadata.page}`
         });
     }
     filterUpdatedManga(data, metadata) {
         var _a, _b;
         let $ = this.cheerio.load(data);
         let returnObject = {
-            'ids': [],
-            'moreResults': true
+            ids: [],
+            nextPage: undefined
         };
         let panel = $('.panel-content-genres');
         for (let item of $('.content-genres-item', panel).toArray()) {
@@ -2874,17 +2873,49 @@ class Manganelo extends paperback_extensions_common_1.Source {
                 }
             }
             else {
-                returnObject.moreResults = false;
-                return returnObject;
+                metadata.page = metadata.page++;
+                returnObject.nextPage = createRequestObject({
+                    url: `${MN_DOMAIN}/genre-all/`,
+                    method: 'GET',
+                    metadata: metadata,
+                    headers: {
+                        "content-type": "application/x-www-form-urlencoded"
+                    },
+                    param: `${metadata.page}`
+                });
+                return createMangaUpdates(returnObject);
             }
         }
         return createMangaUpdates(returnObject);
     }
+    constructGetViewMoreRequest(key, page) {
+        let metadata = { page: page };
+        let param = '';
+        switch (key) {
+            case 'latest_updates': {
+                param = `/genre-all/${metadata.page}`;
+                break;
+            }
+            case 'new_manga': {
+                param = `/genre-all/${metadata.page}?type=newest`;
+                break;
+            }
+            default: return undefined;
+        }
+        return createRequestObject({
+            url: `${MN_DOMAIN}`,
+            method: 'GET',
+            param: param,
+            metadata: {
+                key, page
+            }
+        });
+    }
     getHomePageSectionRequest() {
         let request = createRequestObject({ url: `${MN_DOMAIN}`, method: 'GET', });
         let section1 = createHomeSection({ id: 'top_week', title: 'TOP OF THE WEEK' });
-        let section2 = createHomeSection({ id: 'latest_updates', title: 'LATEST UPDATES' });
-        let section3 = createHomeSection({ id: 'new_manga', title: 'NEW MANGA' });
+        let section2 = createHomeSection({ id: 'latest_updates', title: 'LATEST UPDATES', view_more: this.constructGetViewMoreRequest('latest_updates', 1) });
+        let section3 = createHomeSection({ id: 'new_manga', title: 'NEW MANGA', view_more: this.constructGetViewMoreRequest('new_manga', 1) });
         return [createHomeSectionRequest({ request: request, sections: [section1, section2, section3] })];
     }
     getHomePageSections(data, sections) {
@@ -2932,8 +2963,9 @@ class Manganelo extends paperback_extensions_common_1.Source {
         sections[2].items = newManga;
         return sections;
     }
-    searchRequest(query, page) {
+    searchRequest(query) {
         var _a, _b, _c, _d, _e, _f;
+        let metadata = { page: 1, search: '' };
         let genres = ((_a = query.includeGenre) !== null && _a !== void 0 ? _a : []).concat((_b = query.includeDemographic) !== null && _b !== void 0 ? _b : []).join('_');
         let excluded = ((_c = query.excludeGenre) !== null && _c !== void 0 ? _c : []).concat((_d = query.excludeDemographic) !== null && _d !== void 0 ? _d : []).join('_');
         let status = "";
@@ -2950,11 +2982,11 @@ class Manganelo extends paperback_extensions_common_1.Source {
         if (query.author)
             keyword += ((_f = query.author) !== null && _f !== void 0 ? _f : '').replace(/ /g, '_');
         let search = `s=all&keyw=${keyword}`;
-        search += `&g_i=${genres}&g_e=${excluded}&page=${page}`;
+        search += `&g_i=${genres}&g_e=${excluded}`;
         if (status) {
             search += `&sts=${status}`;
         }
-        let metadata = { 'search': search };
+        metadata.search = search;
         return createRequestObject({
             url: `${MN_DOMAIN}/advanced_search?`,
             method: 'GET',
@@ -2962,7 +2994,7 @@ class Manganelo extends paperback_extensions_common_1.Source {
             headers: {
                 "content-type": "application/x-www-form-urlencoded",
             },
-            param: `${search}`
+            param: `${search}&page=${metadata.page}`
         });
     }
     search(data, metadata) {
@@ -2986,7 +3018,20 @@ class Manganelo extends paperback_extensions_common_1.Source {
                 secondaryText: createIconText({ text: updated, icon: 'clock.fill' })
             }));
         }
-        return manga;
+        metadata.page = metadata.page++;
+        let nextPage = this.isLastPage($) ? undefined : {
+            url: `${MN_DOMAIN}/advanced_search?`,
+            method: 'GET',
+            metadata: metadata,
+            headers: {
+                "content-type": "application/x-www-form-urlencoded",
+            },
+            param: `${metadata.search}&page=${metadata.page}`
+        };
+        return createPagedResults({
+            results: manga,
+            nextPage: nextPage
+        });
     }
     getTagsRequest() {
         return createRequestObject({
@@ -3013,26 +3058,28 @@ class Manganelo extends paperback_extensions_common_1.Source {
         }
         return [genres];
     }
-    getViewMoreRequest(key, page) {
+    getViewMoreRequest(key) {
+        let metadata = { page: 1 };
         let param = '';
         switch (key) {
             case 'latest_updates': {
-                param = `/genre-all/${page}`;
+                param = `/genre-all/${metadata.page}`;
                 break;
             }
             case 'new_manga': {
-                param = `/genre-all/${page}?type=newest`;
+                param = `/genre-all/${metadata.page}?type=newest`;
                 break;
             }
-            default: return null;
+            default: return undefined;
         }
         return createRequestObject({
             url: `${MN_DOMAIN}`,
             method: 'GET',
-            param: param
+            param: param,
+            metadata: metadata
         });
     }
-    getViewMoreItems(data, key) {
+    getViewMoreItems(data, key, metadata) {
         var _a, _b, _c;
         let $ = this.cheerio.load(data);
         let manga = [];
@@ -3060,7 +3107,36 @@ class Manganelo extends paperback_extensions_common_1.Source {
         }
         else
             return null;
-        return manga;
+        let nextPage = undefined;
+        console.log(!this.isLastPage($));
+        if (!this.isLastPage($)) {
+            metadata.page = metadata.page++;
+            let param = '';
+            switch (key) {
+                case 'latest_updates': {
+                    param = `/genre-all/${metadata.page}`;
+                    break;
+                }
+                case 'new_manga': {
+                    param = `/genre-all/${metadata.page}?type=newest`;
+                    break;
+                }
+                default: return null;
+            }
+            nextPage = {
+                url: `${MN_DOMAIN}`,
+                method: 'GET',
+                param: param,
+                metadata: metadata
+            };
+            console.log(nextPage.url);
+            console.log(nextPage.method);
+            console.log(nextPage.param);
+        }
+        return createPagedResults({
+            results: manga,
+            nextPage: nextPage
+        });
     }
     /**
      * Manganelo image requests for older chapters and pages are required to have a referer to it's host
@@ -3080,6 +3156,16 @@ class Manganelo extends paperback_extensions_common_1.Source {
             cookies: request.cookies,
             incognito: request.incognito
         });
+    }
+    isLastPage($) {
+        var _a;
+        let current = $('.page-select').text();
+        let total = $('.page-last').text();
+        if (current) {
+            total = ((_a = /(\d+)/g.exec(total)) !== null && _a !== void 0 ? _a : [''])[0];
+            return (+total) === (+current);
+        }
+        return true;
     }
 }
 exports.Manganelo = Manganelo;
