@@ -14,7 +14,7 @@ export class HanaScans extends Source {
   get icon(): string { return "logo.png" }
   get hentaiSource(): boolean { return false }
   getMangaShareUrl(mangaId: string): string | null { return `${HS_DOMAIN}/${mangaId}.html` }
-  get sourceTags(): SourceTag[] { return [{ text: "raw", type: TagType.INFO }] }
+  get sourceTags(): SourceTag[] { return [{ text: "RAW", type: TagType.GREY }] }
   get rateLimit(): Number {
     return 2
   }
