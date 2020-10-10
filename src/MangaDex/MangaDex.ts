@@ -1,4 +1,4 @@
-import { PagedResults, Source, Manga, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, Request, MangaUpdates } from "paperback-extensions-common"
+import { PagedResults, Source, Manga, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, Request, MangaUpdates, SourceTag, TagType } from "paperback-extensions-common"
 
 export class MangaDex extends Source {
 
@@ -14,6 +14,14 @@ export class MangaDex extends Source {
   get description(): string { return 'Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
   get websiteBaseURL(): string { return 'https://mangadex.org' }
+  get sourceTags(): SourceTag[] {
+    return [
+      {
+        text: "Recommended",
+        type: TagType.BLUE
+      }
+    ]
+  }
 
   get rateLimit() { return 1 }
 
