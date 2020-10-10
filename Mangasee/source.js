@@ -2171,7 +2171,7 @@ class Source {
     /**
      * (OPTIONAL METHOD) A function which should handle parsing apart HTML returned from {@link Source.getHomePageSectionRequest}
      * and finish filling out the {@link HomeSection} objects.
-     * Generally this simply should update the parameter obejcts with all of the correct contents, and
+     * Generally this simply should update the parameter objects with all of the correct contents, and
      * return the completed array
      * @param data The HTML which should be parsed into the {@link HomeSection} objects. There may only be one element in the array, that is okay
      * if only one section exists
@@ -2418,14 +2418,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TagType = void 0;
 /**
  * An enumerator which {@link SourceTags} uses to define the color of the tag rendered on the website.
- * Info is blue, success is green, warning is yellow and danger is red.
+ * Five types are available: blue, green, grey, yellow and red, the default one is blue.
+ * Common colors are red for (Broken), yellow for (+18), grey for (Country-Proof)
  */
 var TagType;
 (function (TagType) {
-    TagType["WARNING"] = "warning";
-    TagType["INFO"] = "info";
-    TagType["SUCCESS"] = "success";
-    TagType["DANGER"] = "danger";
+    TagType["BLUE"] = "default";
+    TagType["GREEN"] = "success";
+    TagType["GREY"] = "info";
+    TagType["YELLOW"] = "warning";
+    TagType["RED"] = "danger";
 })(TagType = exports.TagType || (exports.TagType = {}));
 
 },{}],52:[function(require,module,exports){
