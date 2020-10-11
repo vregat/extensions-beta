@@ -275,7 +275,7 @@ export class HanaScans extends Source {
         id: id,
         title: title,
         image: image,
-        primaryText: createIconText({ text: views })
+        primaryText: createIconText({ text: String(views) })
       }))
     }
 
