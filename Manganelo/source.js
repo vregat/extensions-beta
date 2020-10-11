@@ -766,7 +766,7 @@ module.exports = function transformData(data, headers, fns) {
 };
 
 },{"./../utils":26}],16:[function(require,module,exports){
-(function (process){
+(function (process){(function (){
 'use strict';
 
 var utils = require('./utils');
@@ -865,7 +865,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-}).call(this,require('_process'))
+}).call(this)}).call(this,require('_process'))
 },{"./adapters/http":2,"./adapters/xhr":2,"./helpers/normalizeHeaderName":23,"./utils":26,"_process":56}],17:[function(require,module,exports){
 'use strict';
 
@@ -2246,7 +2246,7 @@ __exportStar(require("./models"), exports);
 __exportStar(require("./APIWrapper"), exports);
 
 },{"./APIWrapper":27,"./base":30,"./models":55}],32:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2254,13 +2254,13 @@ _global.createChapter = function (chapter) {
     return chapter;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],33:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 
 },{}],34:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2268,13 +2268,13 @@ _global.createChapterDetails = function (chapterDetails) {
     return chapterDetails;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],35:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],36:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],37:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2285,7 +2285,7 @@ _global.createHomeSectionRequest = function (homeRequestObject) {
     return homeRequestObject;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],38:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],39:[function(require,module,exports){
@@ -2337,7 +2337,7 @@ var LanguageCode;
 })(LanguageCode = exports.LanguageCode || (exports.LanguageCode = {}));
 
 },{}],40:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2345,7 +2345,7 @@ _global.createManga = function (manga) {
     return manga;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2357,7 +2357,7 @@ var MangaStatus;
 })(MangaStatus = exports.MangaStatus || (exports.MangaStatus = {}));
 
 },{}],42:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2368,13 +2368,13 @@ _global.createIconText = function (iconText) {
     return iconText;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],43:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],44:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],45:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2382,11 +2382,11 @@ _global.createPagedResults = function (update) {
     return update;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],46:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],47:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2397,11 +2397,11 @@ _global.createRequestObject = function (requestObject) {
     return requestObject;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],48:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],49:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2409,7 +2409,7 @@ _global.createSearchRequest = function (searchRequest) {
     return searchRequest;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],50:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],51:[function(require,module,exports){
@@ -2431,7 +2431,7 @@ var TagType;
 })(TagType = exports.TagType || (exports.TagType = {}));
 
 },{}],52:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _global = global;
@@ -2442,7 +2442,7 @@ _global.createTag = function (tag) {
     return tag;
 };
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],53:[function(require,module,exports){
 arguments[4][33][0].apply(exports,arguments)
 },{"dup":33}],54:[function(require,module,exports){
