@@ -2681,7 +2681,7 @@ class Manganelo extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.2.0'; }
+    get version() { return '1.2.1'; }
     get name() { return 'Manganelo'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2875,17 +2875,19 @@ class Manganelo extends paperback_extensions_common_1.Source {
                 }
             }
             else {
-                metadata.page = metadata.page++;
-                returnObject.nextPage = createRequestObject({
-                    url: `${MN_DOMAIN}/genre-all/`,
-                    method: 'GET',
-                    metadata: metadata,
-                    headers: {
-                        "content-type": "application/x-www-form-urlencoded"
-                    },
-                    param: `${metadata.page}`
-                });
-                return createMangaUpdates(returnObject);
+                if (returnObject.ids.length > 0) {
+                    metadata.page++;
+                    returnObject.nextPage = createRequestObject({
+                        url: `${MN_DOMAIN}/genre-all/`,
+                        method: 'GET',
+                        metadata: metadata,
+                        headers: {
+                            "content-type": "application/x-www-form-urlencoded"
+                        },
+                        param: `${metadata.page}`
+                    });
+                }
+                break;
             }
         }
         return createMangaUpdates(returnObject);
