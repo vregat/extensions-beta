@@ -7,7 +7,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.2.0' }
+  get version(): string { return '1.2.1' }
 
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
@@ -217,17 +217,19 @@ export class Manganelo extends Source {
         }
       }
       else {
-        metadata.page = metadata.page++;
-        returnObject.nextPage = createRequestObject({
-          url: `${MN_DOMAIN}/genre-all/`,
-          method: 'GET',
-          metadata: metadata,
-          headers: {
-            "content-type": "application/x-www-form-urlencoded"
-          },
-          param: `${metadata.page}`
-        })
-        return createMangaUpdates(returnObject)
+        if (returnObject.ids.length > 0) {
+          metadata.page++;
+          returnObject.nextPage = createRequestObject({
+            url: `${MN_DOMAIN}/genre-all/`,
+            method: 'GET',
+            metadata: metadata,
+            headers: {
+              "content-type": "application/x-www-form-urlencoded"
+            },
+            param: `${metadata.page}`
+          })
+        }
+        break
       }
     }
 
@@ -317,7 +319,7 @@ export class Manganelo extends Source {
   }
 
   searchRequest(query: SearchRequest): Request | null {
-    let metadata = { page: 1, search: ''}
+    let metadata = { page: 1, search: '' }
     let genres = (query.includeGenre ?? []).concat(query.includeDemographic ?? []).join('_')
     let excluded = (query.excludeGenre ?? []).concat(query.excludeDemographic ?? []).join('_')
     let status = ""
