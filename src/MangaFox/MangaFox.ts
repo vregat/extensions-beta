@@ -24,7 +24,7 @@ export class MangaFox extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '1.2.3' }
+    get version(): string { return '1.2.4' }
 
     get name(): string { return 'MangaFox' }
 
