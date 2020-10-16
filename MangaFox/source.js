@@ -2682,7 +2682,7 @@ class MangaFox extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.2.5'; }
+    get version() { return '1.2.6'; }
     get name() { return 'MangaFox'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Sirus'; }
@@ -2808,7 +2808,11 @@ class MangaFox extends paperback_extensions_common_1.Source {
         let pages = [];
         var rawPages = $('div#viewer').children('img').toArray();
         for (let page of rawPages) {
-            pages.push(page.attribs['data-original']);
+            let url = page.attribs['data-original'];
+            if (url.startsWith("//")) {
+                url = "https:" + url;
+            }
+            pages.push(url);
         }
         let chapterDetails = createChapterDetails({
             id: metadata.chapterId,
