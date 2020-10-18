@@ -8,11 +8,11 @@ import {
     MangaStatus,
     MangaTile,
     MangaUpdates,
+    PagedResults,
     Request,
     SearchRequest,
     Source,
-    TagSection,
-    PagedResults
+    TagSection
 } from "paperback-extensions-common"
 
 const MF_DOMAIN = 'https://fanfox.net'
@@ -24,7 +24,7 @@ export class MangaFox extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '1.2.5' }
+    get version(): string { return '1.2.6' }
 
     get name(): string { return 'MangaFox' }
 
@@ -42,7 +42,7 @@ export class MangaFox extends Source {
 
     get rateLimit(): Number {
         return 2
-      }
+    }
 
       get websiteBaseURL(): string { return MF_DOMAIN }
 
@@ -177,7 +177,11 @@ export class MangaFox extends Source {
         let pages: string[] = [];
         var rawPages = $('div#viewer').children('img').toArray();
         for (let page of rawPages) {
-            pages.push(page.attribs['data-original']);
+            let url = page.attribs['data-original'];
+            if (url.startsWith("//")) {
+                url = "https:" + url;
+            }
+            pages.push(url);
         }
 
         let chapterDetails = createChapterDetails({
@@ -387,7 +391,7 @@ export class MangaFox extends Source {
         }
 
         // If we've reached the end of our scan, return and exit
-        if(!nextPage) {
+        if (!nextPage) {
             return createMangaUpdates({
                 ids: updatedManga
             })
@@ -395,7 +399,7 @@ export class MangaFox extends Source {
 
         // If we are not on the last available page, create a request to scan to the next
         let pagerElements = $('a', $('.pager-list-left')).toArray()
-        if(Number($(pagerElements[pagerElements.length - 1]).attr('href')?.replace('/releases/', '').replace('.html', '')) > metadata.page) {
+        if (Number($(pagerElements[pagerElements.length - 1]).attr('href')?.replace('/releases/', '').replace('.html', '')) > metadata.page) {
 
             metadata.page = metadata.page++
 
@@ -436,8 +440,7 @@ export class MangaFox extends Source {
             }
             dateObj = new Date();
             dateObj.setMinutes(dateObj.getMinutes() - minute);
-        }
-        else if (date.includes("second")) {
+        } else if (date.includes("second")) {
             let second = Number.parseInt(date.match("[0-9]*") ![0]);
             if (second == null) {
                 second = 0;
