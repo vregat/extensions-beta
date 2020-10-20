@@ -6,18 +6,18 @@ export class MangaReader extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.2' }
+  get version(): string { return '1.1.3' }
   get name(): string { return 'MangaReader' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Syn' }
   get authorWebsite(): string { return 'https://github.com/Synstress' }
   get description(): string { return 'Extension that pulls manga from MangReader, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
-  get websiteBaseURL(): string { return 'https://mangareader.net' }
+  get websiteBaseURL(): string { return this.mainUrl }
 
   get rateLimit() { return 100 }
 
-  readonly mainUrl = "https://mangareader.net"
+  readonly mainUrl = "https://www.mangareader.net"
 
   getCloudflareBypassRequest(){
     return createRequestObject({
