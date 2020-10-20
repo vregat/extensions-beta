@@ -2686,7 +2686,7 @@ class Guya extends paperback_extensions_common_1.Source {
         super(cheerio);
     }
     get version() {
-        return "1.0.2";
+        return "1.0.3";
     }
     get name() {
         return "Guya";
@@ -2713,10 +2713,10 @@ class Guya extends paperback_extensions_common_1.Source {
         return 2;
     }
     get websiteBaseURL() { return GUYA_API_BASE; }
-    getMangaDetailsRequest(empty) {
+    getMangaDetailsRequest(ids) {
         return [
             createRequestObject({
-                metadata: { empty },
+                metadata: { ids },
                 url: GUYA_ALL_SERIES_API,
                 method: "GET",
             }),
@@ -2727,16 +2727,18 @@ class Guya extends paperback_extensions_common_1.Source {
         let mangas = [];
         for (let series in result) {
             let seriesDetails = result[series];
-            mangas.push(createManga({
-                id: seriesDetails["slug"],
-                titles: [series],
-                image: `${GUYA_API_BASE}/${seriesDetails["cover"]}`,
-                rating: 5,
-                status: paperback_extensions_common_1.MangaStatus.ONGOING,
-                artist: seriesDetails["artist"],
-                author: seriesDetails["author"],
-                desc: seriesDetails["description"],
-            }));
+            if (metadata.ids.includes(seriesDetails["slug"])) {
+                mangas.push(createManga({
+                    id: seriesDetails["slug"],
+                    titles: [series],
+                    image: `${GUYA_API_BASE}/${seriesDetails["cover"]}`,
+                    rating: 5,
+                    status: paperback_extensions_common_1.MangaStatus.ONGOING,
+                    artist: seriesDetails["artist"],
+                    author: seriesDetails["author"],
+                    desc: seriesDetails["description"],
+                }));
+            }
         }
         return mangas;
     }
