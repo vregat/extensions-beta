@@ -2681,7 +2681,7 @@ class ReadComicsOnline extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.2.2'; }
+    get version() { return '0.2.3'; }
     get name() { return 'ReadComicsOnline'; }
     get description() { return 'Extension that pulls western comics from ReadComicsOnline.ru'; }
     get author() { return 'Conrad Weiser'; }
@@ -2837,8 +2837,6 @@ class ReadComicsOnline extends paperback_extensions_common_1.Source {
         });
     }
     searchRequest(query) {
-        var _a;
-        query.title = (_a = query.title) === null || _a === void 0 ? void 0 : _a.replace(" ", "+");
         let metadata = { searchQuery: query.title };
         return createRequestObject({
             url: `${READCOMICSONLINE_DOMAIN}/search`,
