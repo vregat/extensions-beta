@@ -2681,7 +2681,7 @@ class ReadComicsOnline extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.2.3'; }
+    get version() { return '0.2.4'; }
     get name() { return 'ReadComicsOnline'; }
     get description() { return 'Extension that pulls western comics from ReadComicsOnline.ru'; }
     get author() { return 'Conrad Weiser'; }
@@ -2837,7 +2837,8 @@ class ReadComicsOnline extends paperback_extensions_common_1.Source {
         });
     }
     searchRequest(query) {
-        let metadata = { searchQuery: query.title };
+        var _a;
+        let metadata = { searchQuery: (_a = query.title) === null || _a === void 0 ? void 0 : _a.toLowerCase() };
         return createRequestObject({
             url: `${READCOMICSONLINE_DOMAIN}/search`,
             timeout: 4000,
@@ -2851,7 +2852,7 @@ class ReadComicsOnline extends paperback_extensions_common_1.Source {
         // Parse the json context
         for (let entry of obj.suggestions) {
             // Is this relevent to the query?
-            if (entry.value.includes(metadata.searchQuery)) {
+            if (entry.value.toLowerCase().includes(metadata.searchQuery)) {
                 let image = `${READCOMICSONLINE_DOMAIN}/uploads/manga/${entry.data}/cover/cover_250x350.jpg`;
                 mangaTiles.push(createMangaTile({
                     id: entry.data,
