@@ -7,7 +7,7 @@ export class ReadComicsOnline extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.2.2' }
+  get version(): string { return '0.2.3' }
   get name(): string { return 'ReadComicsOnline' }
   get description(): string { return 'Extension that pulls western comics from ReadComicsOnline.ru' }
   get author(): string { return 'Conrad Weiser' }
@@ -184,7 +184,6 @@ export class ReadComicsOnline extends Source {
 
   searchRequest(query: SearchRequest): Request | null {
 
-    query.title = query.title?.replace(" ", "+")
     let metadata = {searchQuery: query.title}
 
     return createRequestObject({
