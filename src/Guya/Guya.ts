@@ -26,7 +26,7 @@ export class Guya extends Source {
   }
 
   get version(): string {
-    return "1.0.2";
+    return "1.0.3";
   }
   get name(): string {
     return "Guya";
@@ -55,10 +55,10 @@ export class Guya extends Source {
 
   get websiteBaseURL(): string { return GUYA_API_BASE }
 
-  getMangaDetailsRequest(empty: string[]): Request[] {
+  getMangaDetailsRequest(ids: string[]): Request[] {
     return [
       createRequestObject({
-        metadata: { empty },
+        metadata: { ids },
         url: GUYA_ALL_SERIES_API,
         method: "GET",
       }),
@@ -71,18 +71,20 @@ export class Guya extends Source {
     let mangas = [];
     for (let series in result) {
       let seriesDetails = result[series];
-      mangas.push(
-        createManga({
-          id: seriesDetails["slug"],
-          titles: [series],
-          image: `${GUYA_API_BASE}/${seriesDetails["cover"]}`,
-          rating: 5,
-          status: MangaStatus.ONGOING,
-          artist: seriesDetails["artist"],
-          author: seriesDetails["author"],
-          desc: seriesDetails["description"],
-        })
-      );
+      if (metadata.ids.includes(seriesDetails["slug"])) {
+        mangas.push(
+          createManga({
+            id: seriesDetails["slug"],
+            titles: [series],
+            image: `${GUYA_API_BASE}/${seriesDetails["cover"]}`,
+            rating: 5,
+            status: MangaStatus.ONGOING,
+            artist: seriesDetails["artist"],
+            author: seriesDetails["author"],
+            desc: seriesDetails["description"],
+          })
+        );
+      }
     }
 
     return mangas;
