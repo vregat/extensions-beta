@@ -2680,7 +2680,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.0.30'; }
+    get version() { return '1.0.31'; }
     get name() { return 'MangaDex'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Faizan Durrani'; }
@@ -2792,9 +2792,9 @@ class MangaDex extends paperback_extensions_common_1.Source {
     }
     getChapterDetailsRequest(mangaId, chapId) {
         return createRequestObject({
-            url: `${MD_CHAPTER_API}/${chapId}`,
+            url: `${MD_CHAPTER_API}/${chapId}?mark_read=0`,
             method: 'GET',
-            incognito: true
+            incognito: false
         });
     }
     getChapterDetails(data, metadata) {
