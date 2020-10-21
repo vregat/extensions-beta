@@ -6,7 +6,7 @@ export class MangaDex extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.30' }
+  get version(): string { return '1.0.31' }
   get name(): string { return 'MangaDex' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Faizan Durrani' }
@@ -127,9 +127,9 @@ export class MangaDex extends Source {
 
   getChapterDetailsRequest(mangaId: string, chapId: string): Request {
     return createRequestObject({
-      url: `${MD_CHAPTER_API}/${chapId}`,
+      url: `${MD_CHAPTER_API}/${chapId}?mark_read=0`,
       method: 'GET',
-      incognito: true
+      incognito: false
     })
   }
 
