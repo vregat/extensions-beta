@@ -1,4 +1,4 @@
-import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates, PagedResults } from "paperback-extensions-common"
+import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates, PagedResults, SourceTag, TagType } from "paperback-extensions-common"
 
 const ML_DOMAIN = 'https://manga4life.com'
 let ML_IMAGE_DOMAIN = 'https://cover.mangabeast01.com/cover'
@@ -9,7 +9,7 @@ export class MangaLife extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.8.0' }
+  get version(): string { return '1.0.1' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -19,6 +19,15 @@ export class MangaLife extends Source {
   getMangaShareUrl(mangaId: string): string | null { return `${ML_DOMAIN}/manga/${mangaId}` }
   get rateLimit(): Number { return 2 }
   get websiteBaseURL(): string { return ML_DOMAIN }
+
+  get sourceTags(): SourceTag[] {
+    return [
+      {
+        text: "Notifications",
+        type: TagType.GREEN
+      }
+    ]
+  }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     let requests: Request[] = []
@@ -242,6 +251,10 @@ export class MangaLife extends Source {
     let $ = this.cheerio.load(data)
     let mangaTiles: MangaTile[] = []
     let directory = JSON.parse((data.match(/vm.Directory = (.*);/) ?? [])[1])
+
+    let imgSource = ($('.img-fluid').first().attr('src')?.match(/(.*cover)/) ?? [])[1];
+    if (imgSource !== ML_IMAGE_DOMAIN)
+      ML_IMAGE_DOMAIN = imgSource;
 
     directory.forEach((elem: any) => {
       let mKeyword: boolean = typeof metadata.keyword !== 'undefined' ? false : true

@@ -1,4 +1,4 @@
-import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates, PagedResults } from "paperback-extensions-common"
+import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates, PagedResults, SourceTag, TagType } from "paperback-extensions-common"
 
 const MS_DOMAIN = 'https://mangasee123.com'
 let MS_IMAGE_DOMAIN = 'https://cover.mangabeast01.com/cover'
@@ -8,7 +8,7 @@ export class Mangasee extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.2.2' }
+  get version(): string { return '1.2.3' }
   get name(): string { return 'Mangasee' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -19,6 +19,15 @@ export class Mangasee extends Source {
   get websiteBaseURL(): string { return MS_DOMAIN }
   get rateLimit(): Number {
     return 2
+  }
+
+  get sourceTags(): SourceTag[] {
+    return [
+      {
+        text: "Notifications",
+        type: TagType.GREEN
+      }
+    ]
   }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
@@ -242,6 +251,10 @@ export class Mangasee extends Source {
     let $ = this.cheerio.load(data)
     let mangaTiles: MangaTile[] = []
     let directory = JSON.parse((data.match(/vm.Directory = (.*);/) ?? [])[1])
+
+    let imgSource = ($('.img-fluid').first().attr('src')?.match(/(.*cover)/) ?? [])[1];
+    if (imgSource !== MS_IMAGE_DOMAIN)
+      MS_IMAGE_DOMAIN = imgSource;
 
     directory.forEach((elem: any) => {
       let mKeyword: boolean = typeof metadata.keyword !== 'undefined' ? false : true
