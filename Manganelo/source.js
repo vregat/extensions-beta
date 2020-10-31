@@ -2681,7 +2681,7 @@ class Manganelo extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.2.1'; }
+    get version() { return '1.2.2'; }
     get name() { return 'Manganelo'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2692,6 +2692,14 @@ class Manganelo extends paperback_extensions_common_1.Source {
     get websiteBaseURL() { return MN_DOMAIN; }
     get rateLimit() {
         return 2;
+    }
+    get sourceTags() {
+        return [
+            {
+                text: "Notifications",
+                type: paperback_extensions_common_1.TagType.GREEN
+            }
+        ];
     }
     getMangaDetailsRequest(ids) {
         let requests = [];

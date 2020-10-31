@@ -2682,7 +2682,7 @@ class MangaLife extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.8.0'; }
+    get version() { return '1.0.1'; }
     get name() { return 'Manga4Life'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2692,6 +2692,14 @@ class MangaLife extends paperback_extensions_common_1.Source {
     getMangaShareUrl(mangaId) { return `${ML_DOMAIN}/manga/${mangaId}`; }
     get rateLimit() { return 2; }
     get websiteBaseURL() { return ML_DOMAIN; }
+    get sourceTags() {
+        return [
+            {
+                text: "Notifications",
+                type: paperback_extensions_common_1.TagType.GREEN
+            }
+        ];
+    }
     getMangaDetailsRequest(ids) {
         let requests = [];
         for (let id of ids) {
@@ -2896,10 +2904,13 @@ class MangaLife extends paperback_extensions_common_1.Source {
         });
     }
     search(data, metadata) {
-        var _a;
+        var _a, _b, _c;
         let $ = this.cheerio.load(data);
         let mangaTiles = [];
         let directory = JSON.parse(((_a = data.match(/vm.Directory = (.*);/)) !== null && _a !== void 0 ? _a : [])[1]);
+        let imgSource = ((_c = (_b = $('.img-fluid').first().attr('src')) === null || _b === void 0 ? void 0 : _b.match(/(.*cover)/)) !== null && _c !== void 0 ? _c : [])[1];
+        if (imgSource !== ML_IMAGE_DOMAIN)
+            ML_IMAGE_DOMAIN = imgSource;
         directory.forEach((elem) => {
             let mKeyword = typeof metadata.keyword !== 'undefined' ? false : true;
             let mAuthor = metadata.author !== '' ? false : true;

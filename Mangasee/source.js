@@ -2682,7 +2682,7 @@ class Mangasee extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.2.2'; }
+    get version() { return '1.2.3'; }
     get name() { return 'Mangasee'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2693,6 +2693,14 @@ class Mangasee extends paperback_extensions_common_1.Source {
     get websiteBaseURL() { return MS_DOMAIN; }
     get rateLimit() {
         return 2;
+    }
+    get sourceTags() {
+        return [
+            {
+                text: "Notifications",
+                type: paperback_extensions_common_1.TagType.GREEN
+            }
+        ];
     }
     getMangaDetailsRequest(ids) {
         let requests = [];
@@ -2897,10 +2905,13 @@ class Mangasee extends paperback_extensions_common_1.Source {
         });
     }
     search(data, metadata) {
-        var _a;
+        var _a, _b, _c;
         let $ = this.cheerio.load(data);
         let mangaTiles = [];
         let directory = JSON.parse(((_a = data.match(/vm.Directory = (.*);/)) !== null && _a !== void 0 ? _a : [])[1]);
+        let imgSource = ((_c = (_b = $('.img-fluid').first().attr('src')) === null || _b === void 0 ? void 0 : _b.match(/(.*cover)/)) !== null && _c !== void 0 ? _c : [])[1];
+        if (imgSource !== MS_IMAGE_DOMAIN)
+            MS_IMAGE_DOMAIN = imgSource;
         directory.forEach((elem) => {
             let mKeyword = typeof metadata.keyword !== 'undefined' ? false : true;
             let mAuthor = metadata.author !== '' ? false : true;
