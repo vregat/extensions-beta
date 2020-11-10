@@ -2680,7 +2680,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.0.31'; }
+    get version() { return '1.0.32'; }
     get name() { return 'MangaDex'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Faizan Durrani'; }
@@ -3024,18 +3024,20 @@ class MangaDex extends paperback_extensions_common_1.Source {
         return this.constructSearchRequest(query, 1);
     }
     search(data, metadata) {
-        let mangas = this.getMangaDetails(data, {});
+        var _a;
+        let result = JSON.parse(data);
+        let mangas = [];
+        for (let mangaDetails of result["result"]) {
+            mangas.push(createMangaTile({
+                id: mangaDetails["id"],
+                image: mangaDetails["image"],
+                title: createIconText({
+                    text: (_a = mangaDetails["titles"][0]) !== null && _a !== void 0 ? _a : "UNKNOWN"
+                })
+            }));
+        }
         return createPagedResults({
-            results: mangas.map(manga => {
-                var _a;
-                return createMangaTile({
-                    id: manga.id,
-                    image: manga.image,
-                    title: createIconText({
-                        text: (_a = manga.titles[0]) !== null && _a !== void 0 ? _a : "UNKNOWN"
-                    })
-                });
-            }),
+            results: mangas,
             nextPage: mangas.length > 0 ? this.constructSearchRequest(metadata.query, metadata.page + 1) : undefined
         });
     }
