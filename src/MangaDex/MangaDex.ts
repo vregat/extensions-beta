@@ -6,7 +6,7 @@ export class MangaDex extends Source {
     super(cheerio);
   }
 
-  get version(): string { return '1.0.32'; }
+  get version(): string { return '1.0.33'; }
   get name(): string { return 'MangaDex'; }
   get icon(): string { return 'icon.png'; }
   get author(): string { return 'Faizan Durrani'; }
@@ -405,7 +405,7 @@ export class MangaDex extends Source {
     for (let mangaDetails of result["result"]) {
       mangas.push(
         createMangaTile({
-          id: mangaDetails["id"],
+          id: mangaDetails["id"].toString(),
           image: mangaDetails["image"],
           title: createIconText({
             text: mangaDetails["titles"][0] ?? "UNKNOWN"
