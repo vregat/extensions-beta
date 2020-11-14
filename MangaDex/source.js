@@ -2680,7 +2680,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.0.34'; }
+    get version() { return '1.0.35'; }
     get name() { return 'MangaDex'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Faizan Durrani'; }
@@ -2711,13 +2711,14 @@ class MangaDex extends paperback_extensions_common_1.Source {
             })];
     }
     getMangaDetails(data, metadata) {
+        var _a;
         let result = JSON.parse(data);
         let mangas = [];
         for (let mangaDetails of result["result"]) {
             mangas.push(createManga({
                 id: mangaDetails["id"].toString(),
                 titles: mangaDetails["titles"],
-                image: mangaDetails["image"],
+                image: (_a = mangaDetails["image"]) !== null && _a !== void 0 ? _a : "https://mangadex.org/images/avatars/default1.jpg",
                 rating: mangaDetails["rating"],
                 status: mangaDetails["status"],
                 langFlag: mangaDetails["langFlag"],
