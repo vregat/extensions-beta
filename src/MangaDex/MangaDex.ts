@@ -6,7 +6,7 @@ export class MangaDex extends Source {
     super(cheerio);
   }
 
-  get version(): string { return '1.0.33'; }
+  get version(): string { return '1.0.34'; }
   get name(): string { return 'MangaDex'; }
   get icon(): string { return 'icon.png'; }
   get author(): string { return 'Faizan Durrani'; }
@@ -106,8 +106,6 @@ export class MangaDex extends Source {
 
   getChapters(data: any, metadata: any): Chapter[] {
     let chapters = JSON.parse(data).chapter as any;
-
-    console.log(data);
 
     return Object.keys(chapters).map(id => {
       const chapter = chapters[id];
