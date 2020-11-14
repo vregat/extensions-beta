@@ -6,7 +6,7 @@ export class MangaDex extends Source {
     super(cheerio);
   }
 
-  get version(): string { return '1.0.34'; }
+  get version(): string { return '1.0.35'; }
   get name(): string { return 'MangaDex'; }
   get icon(): string { return 'icon.png'; }
   get author(): string { return 'Faizan Durrani'; }
@@ -46,7 +46,7 @@ export class MangaDex extends Source {
       mangas.push(createManga({
         id: mangaDetails["id"].toString(),
         titles: mangaDetails["titles"],
-        image: mangaDetails["image"],
+        image: mangaDetails["image"] ?? "https://mangadex.org/images/avatars/default1.jpg",
         rating: mangaDetails["rating"],
         status: mangaDetails["status"],
         langFlag: mangaDetails["langFlag"],
