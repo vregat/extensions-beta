@@ -2680,7 +2680,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.0.33'; }
+    get version() { return '1.0.34'; }
     get name() { return 'MangaDex'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Faizan Durrani'; }
@@ -2774,7 +2774,6 @@ class MangaDex extends paperback_extensions_common_1.Source {
     }
     getChapters(data, metadata) {
         let chapters = JSON.parse(data).chapter;
-        console.log(data);
         return Object.keys(chapters).map(id => {
             const chapter = chapters[id];
             const volume = Number(chapter.volume);
