@@ -7,7 +7,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.2.2' }
+  get version(): string { return '1.3.0' }
 
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
