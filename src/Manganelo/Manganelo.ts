@@ -1,4 +1,4 @@
-import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, MangaUpdates, PagedResults, SourceTag, TagType } from "paperback-extensions-common"
+import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, PagedResults, SourceTag, TagType, MangaUpdates } from "paperback-extensions-common"
 
 const MN_DOMAIN = 'https://manganelo.com'
 
@@ -210,6 +210,7 @@ export class Manganelo extends Source {
       nextPage: undefined
     }
 
+    let passedReferenceTime = false;
     let panel = $('.panel-content-genres')
     for (let item of $('.content-genres-item', panel).toArray()) {
       let id = ($('a', item).first().attr('href') ?? '').split('/').pop() ?? ''
@@ -220,26 +221,26 @@ export class Manganelo extends Source {
         time = new Date(Date.now() - 60000)
       }
 
-      if (time > metadata.referenceTime) {
+      passedReferenceTime = time <= metadata.referenceTime;
+      if (!passedReferenceTime) {
         if (metadata.ids.includes(id)) {
           returnObject.ids.push(id)
         }
       }
-      else {
-        if (returnObject.ids.length > 0) {
-          metadata.page++;
-          returnObject.nextPage = createRequestObject({
-            url: `${MN_DOMAIN}/genre-all/`,
-            method: 'GET',
-            metadata: metadata,
-            headers: {
-              "content-type": "application/x-www-form-urlencoded"
-            },
-            param: `${metadata.page}`
-          })
-        }
-        break
-      }
+      else break;
+    }
+
+    if (!passedReferenceTime) {
+      metadata.page++;
+      returnObject.nextPage = createRequestObject({
+        url: `${MN_DOMAIN}/genre-all/`,
+        method: 'GET',
+        metadata: metadata,
+        headers: {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        param: `${metadata.page}`
+      })
     }
 
     return createMangaUpdates(returnObject)
