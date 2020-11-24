@@ -2681,7 +2681,7 @@ class Manganelo extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.2.2'; }
+    get version() { return '1.3.0'; }
     get name() { return 'Manganelo'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -2868,6 +2868,7 @@ class Manganelo extends paperback_extensions_common_1.Source {
             ids: [],
             nextPage: undefined
         };
+        let passedReferenceTime = false;
         let panel = $('.panel-content-genres');
         for (let item of $('.content-genres-item', panel).toArray()) {
             let id = (_b = ((_a = $('a', item).first().attr('href')) !== null && _a !== void 0 ? _a : '').split('/').pop()) !== null && _b !== void 0 ? _b : '';
@@ -2877,26 +2878,26 @@ class Manganelo extends paperback_extensions_common_1.Source {
             if (time > new Date(Date.now())) {
                 time = new Date(Date.now() - 60000);
             }
-            if (time > metadata.referenceTime) {
+            passedReferenceTime = time <= metadata.referenceTime;
+            if (!passedReferenceTime) {
                 if (metadata.ids.includes(id)) {
                     returnObject.ids.push(id);
                 }
             }
-            else {
-                if (returnObject.ids.length > 0) {
-                    metadata.page++;
-                    returnObject.nextPage = createRequestObject({
-                        url: `${MN_DOMAIN}/genre-all/`,
-                        method: 'GET',
-                        metadata: metadata,
-                        headers: {
-                            "content-type": "application/x-www-form-urlencoded"
-                        },
-                        param: `${metadata.page}`
-                    });
-                }
+            else
                 break;
-            }
+        }
+        if (!passedReferenceTime) {
+            metadata.page++;
+            returnObject.nextPage = createRequestObject({
+                url: `${MN_DOMAIN}/genre-all/`,
+                method: 'GET',
+                metadata: metadata,
+                headers: {
+                    "content-type": "application/x-www-form-urlencoded"
+                },
+                param: `${metadata.page}`
+            });
         }
         return createMangaUpdates(returnObject);
     }
