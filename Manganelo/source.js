@@ -485,7 +485,7 @@ class Manganelo extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.3.0'; }
+    get version() { return '1.3.5'; }
     get name() { return 'Manganelo'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -612,7 +612,7 @@ class Manganelo extends paperback_extensions_common_1.Source {
         for (let chapter of $('li', allChapters).toArray()) {
             let id = (_b = (_a = $('a', chapter).attr('href')) === null || _a === void 0 ? void 0 : _a.split('/').pop()) !== null && _b !== void 0 ? _b : '';
             let name = (_c = $('a', chapter).text()) !== null && _c !== void 0 ? _c : '';
-            let chNum = Number((_e = ((_d = /Chapter (\d*)/g.exec(name)) !== null && _d !== void 0 ? _d : [])[1]) !== null && _e !== void 0 ? _e : '');
+            let chNum = Number((_e = ((_d = /Chapter ([1-9]\d*(\.\d+)?)/g.exec(name)) !== null && _d !== void 0 ? _d : [])[1]) !== null && _e !== void 0 ? _e : '');
             let time = new Date((_f = $('.chapter-time', chapter).attr('title')) !== null && _f !== void 0 ? _f : '');
             chapters.push(createChapter({
                 id: id,
