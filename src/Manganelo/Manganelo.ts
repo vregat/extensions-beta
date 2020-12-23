@@ -7,7 +7,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.3.5' }
+  get version(): string { return '1.3.6' }
 
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
@@ -144,7 +144,7 @@ export class Manganelo extends Source {
     for (let chapter of $('li', allChapters).toArray()) {
       let id: string = $('a', chapter).attr('href')?.split('/').pop() ?? ''
       let name: string = $('a', chapter).text() ?? ''
-      let chNum: number = Number((/Chapter ([1-9]\d*(\.\d+)?)/g.exec(name) ?? [])[1] ?? '')
+      let chNum: number = Number((/Chapter ([0-9]\d*(\.\d+)?)/g.exec(name) ?? [])[1] ?? '')
       let time: Date = new Date($('.chapter-time', chapter).attr('title') ?? '')
       chapters.push(createChapter({
         id: id,
