@@ -8,7 +8,7 @@ export class Mangasee extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.2.3' }
+  get version(): string { return '1.3.0' }
   get name(): string { return 'Mangasee' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -140,6 +140,7 @@ export class Mangasee extends Source {
         mangaId: metadata.id,
         name: name,
         chapNum: chNum,
+        volume: vol,
         langCode: LanguageCode.ENGLISH,
         time: isNaN(time) ? new Date() : new Date(time)
       }))
