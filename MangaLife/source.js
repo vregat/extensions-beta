@@ -486,7 +486,7 @@ class MangaLife extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '1.0.1'; }
+    get version() { return '1.1.1'; }
     get name() { return 'Manga4Life'; }
     get icon() { return 'icon.png'; }
     get author() { return 'Daniel Kovalevich'; }
@@ -518,21 +518,29 @@ class MangaLife extends paperback_extensions_common_1.Source {
         return requests;
     }
     getMangaDetails(data, metadata) {
-        var _a, _b, _c, _d, _e, _f, _g;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         let manga = [];
         let $ = this.cheerio.load(data);
-        let json = JSON.parse((_b = (_a = $('[type=application\\/ld\\+json]').html()) === null || _a === void 0 ? void 0 : _a.replace(/\t*\n*/g, '')) !== null && _b !== void 0 ? _b : '');
+        // this is only because they added some really jank alternate titles and didn't propely string escape
+        let jsonWithoutAlternateName = ((_b = (_a = $('[type=application\\/ld\\+json]')
+            .html()) === null || _a === void 0 ? void 0 : _a.replace(/\t*\n*/g, '')) !== null && _b !== void 0 ? _b : '')
+            .replace(/"alternateName".*?],/g, '');
+        let alternateNames = ((_e = /"alternateName": \[(.*?)\]/.exec((_d = (_c = $('[type=application\\/ld\\+json]')
+            .html()) === null || _c === void 0 ? void 0 : _c.replace(/\t*\n*/g, '')) !== null && _d !== void 0 ? _d : '')) !== null && _e !== void 0 ? _e : [])[1]
+            .replace(/\"/g, '')
+            .split(',');
+        let json = JSON.parse(jsonWithoutAlternateName);
         let entity = json.mainEntity;
         let info = $('.row');
-        let imgSource = ((_d = (_c = $('.ImgHolder').html()) === null || _c === void 0 ? void 0 : _c.match(/src="(.*)\//)) !== null && _d !== void 0 ? _d : [])[1];
+        let imgSource = ((_g = (_f = $('.ImgHolder').html()) === null || _f === void 0 ? void 0 : _f.match(/src="(.*)\//)) !== null && _g !== void 0 ? _g : [])[1];
         if (imgSource !== ML_IMAGE_DOMAIN)
             ML_IMAGE_DOMAIN = imgSource;
         let image = `${ML_IMAGE_DOMAIN}/${metadata.id}.jpg`;
-        let title = (_e = $('h1', info).first().text()) !== null && _e !== void 0 ? _e : '';
+        let title = (_h = $('h1', info).first().text()) !== null && _h !== void 0 ? _h : '';
         let titles = [title];
         let author = entity.author[0];
-        titles = titles.concat(entity.alternateName);
-        let follows = Number(((_g = (_f = $.root().html()) === null || _f === void 0 ? void 0 : _f.match(/vm.NumSubs = (.*);/)) !== null && _g !== void 0 ? _g : [])[1]);
+        titles = titles.concat(alternateNames);
+        let follows = Number(((_k = (_j = $.root().html()) === null || _j === void 0 ? void 0 : _j.match(/vm.NumSubs = (.*);/)) !== null && _k !== void 0 ? _k : [])[1]);
         let tagSections = [createTagSection({ id: '0', label: 'genres', tags: [] }),
             createTagSection({ id: '1', label: 'format', tags: [] })];
         tagSections[0].tags = entity.genre.map((elem) => createTag({ id: elem, label: elem }));
