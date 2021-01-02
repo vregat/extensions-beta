@@ -24,7 +24,7 @@
     "typescript": "^3.9.6"
   },
   "devDependencies": {
-    "@types/cheerio": "^0.22.21",
+    "@types/cheerio": "^0.22.2",
     "@types/mocha": "^7.0.2",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",

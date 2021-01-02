@@ -3,9 +3,13 @@ import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest
 const READMNGCOM_DOMAIN = 'https://www.readmng.com'
 
 export class ReadmngCom extends Source {
+    constructor(cheerio: CheerioAPI) {
+        super(cheerio)
+    }
+
     get version(): string { return '0.0.1' }
     get name(): string { return 'readmng.com' }
-    get icon(): string { return 'icon.png' }
+    get icon(): string { return 'logo.png' }
     get author(): string { return 'Vregat' }
     get description(): string { return 'Extension that pulls mangas from readmng.com' }
     get hentaiSource(): boolean { return false }
@@ -113,10 +117,37 @@ export class ReadmngCom extends Source {
         return chapterDetails
     }
     searchRequest(query: SearchRequest): Request | null {
-        throw new Error("Method not implemented.")
+        let title = query.title ?? ''
+        return createRequestObject({
+            url: `${READMNGCOM_DOMAIN}/service/advanced_search`,
+            method: 'POST',
+            headers: {
+                "content-type": "application/x-www-form-urlencoded",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            param: `type=all&manga-name=${title}&author-name=&artist-name=&status=both`
+        })
     }
     search(data: any, metadata: any): PagedResults | null {
-        throw new Error("Method not implemented.")
+        let $ = this.cheerio.load(data)
+
+        let manga: MangaTile[] = []
+
+        for (let item of $('.style-list > div.box').toArray()) {
+            let id = $('.title > a', item).attr('href')?.replace(`${READMNGCOM_DOMAIN}/`, '') ?? ''
+            let title = $('.title > a', item).attr('title') ?? ''
+            let img = $('.body > a > img').attr('src') ?? ''
+
+            manga.push(createMangaTile({
+                id: id,
+                title: createIconText({ text: title }),
+                image: img
+            }))
+        }
+
+        return createPagedResults({
+            results: manga
+        })
     }
     getMangaShareUrl(mangaId: string): string | null { return `${READMNGCOM_DOMAIN}/${mangaId}` }
 }
