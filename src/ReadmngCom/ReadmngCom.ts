@@ -38,7 +38,7 @@ export class ReadmngCom extends Source {
 
         let titles = [title].concat($('.dl-horizontal > dd:nth-child(2)', panel).text().split(/,|;/))
         let status = $('.dl-horizontal > dd:nth-child(4)', panel).text().toString() == 'Completed' ? MangaStatus.COMPLETED : MangaStatus.ONGOING
-        let views = +$('.dl-horizontal > dd:nth-child(10)', panel).text().replaceAll(',', '')
+        let views = +$('.dl-horizontal > dd:nth-child(10)', panel).text().split(',').join('')
         let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] })]
 
         for (let tagElement of $('.dl-horizontal > dd:nth-child(6)', panel).find('a').toArray()) {
@@ -140,7 +140,7 @@ export class ReadmngCom extends Source {
             },
             data: {
                 'type': 'all',
-                'manga-name': query.title,
+                'manga-name': title,
                 'author-name': '',
                 'artist-name': '',
                 'status': 'both'
