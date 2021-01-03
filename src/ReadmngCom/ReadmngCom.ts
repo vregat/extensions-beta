@@ -11,6 +11,7 @@ export class ReadmngCom extends Source {
     get name(): string { return 'readmng.com' }
     get icon(): string { return 'logo.png' }
     get author(): string { return 'Vregat' }
+    get authorWebsite(): string { return 'https://github.com/vregat/extensions-beta' }
     get description(): string { return 'Extension that pulls mangas from readmng.com' }
     get hentaiSource(): boolean { return false }
     get websiteBaseURL(): string { return READMNGCOM_DOMAIN }
@@ -49,10 +50,14 @@ export class ReadmngCom extends Source {
 
         let description = $('.movie-detail').text().trim()
 
-        let author = '' //TODO
-        let artist = '' //TODO
+        let castList = $('ul.cast-list')
+        let authorElement = $('li:contains("Author")', castList)
+        let author = $("li > a", authorElement).text().trim()
 
-        let rating = 0 //TODO
+        let artistElement = $('li:contains("Artist")', castList)
+        let artist = $("li > a", artistElement).text().trim()
+
+        let rating = +$('div.progress-bar-success').attr('title').replace('%', '')
 
         manga.push(createManga({
             id: metadata.id,
@@ -130,7 +135,23 @@ export class ReadmngCom extends Source {
     }
 
     searchRequest(query: SearchRequest): Request | null {
-        let title = query.title ?? ''
+        let title = (query.title ?? '').split(' ').join('+')
+        let author = (query.author ?? '').split(' ').join('+')
+        let artist = (query.artist ?? '').split(' ').join('+')
+
+        let status = ''
+        switch (query.status) {
+            case 0:
+                status = 'completed'
+                break;
+            case 1:
+                status = 'ongoing'
+                break;
+            default:
+                status = 'both'
+                break;
+        }
+
         return createRequestObject({
             url: `${READMNGCOM_DOMAIN}/service/advanced_search`,
             method: 'POST',
@@ -141,9 +162,9 @@ export class ReadmngCom extends Source {
             data: {
                 'type': 'all',
                 'manga-name': title,
-                'author-name': '',
-                'artist-name': '',
-                'status': 'both'
+                'author-name': author,
+                'artist-name': artist,
+                'status': status
             }
         })
     }
