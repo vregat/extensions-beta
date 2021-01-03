@@ -1,14 +1,13 @@
 import { Source, Manga, MangaStatus, Chapter, ChapterDetails, HomeSectionRequest, HomeSection, MangaTile, SearchRequest, LanguageCode, TagSection, Request, PagedResults, SourceTag, TagType, MangaUpdates } from "paperback-extensions-common"
 
 const READMNGCOM_DOMAIN = 'https://www.readmng.com'
-const DEBUG = true
 
 export class ReadmngCom extends Source {
     constructor(cheerio: CheerioAPI) {
         super(cheerio)
     }
 
-    get version(): string { return '0.0.2' }
+    get version(): string { return '0.0.3' }
     get name(): string { return 'readmng.com' }
     get icon(): string { return 'logo.png' }
     get author(): string { return 'Vregat' }
@@ -38,8 +37,8 @@ export class ReadmngCom extends Source {
         let image = $('.img-responsive', panel).attr('src') ?? ''
 
         let titles = [title].concat($('.dl-horizontal > dd:nth-child(2)', panel).text().split(/,|;/))
-        let status = $('.dl-horizontal > dd:nth-child(3)', panel).text() == "Completed" ? MangaStatus.COMPLETED : MangaStatus.ONGOING
-        let views = Number($('.dl-horizontal > dd:nth-child(10)', panel).text().replace(',', ''))
+        let status = $('.dl-horizontal > dd:nth-child(4)', panel).text().toString() == 'Completed' ? MangaStatus.COMPLETED : MangaStatus.ONGOING
+        let views = +$('.dl-horizontal > dd:nth-child(10)', panel).text().replaceAll(',', '')
         let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] })]
 
         for (let tagElement of $('.dl-horizontal > dd:nth-child(6)', panel).find('a').toArray()) {
@@ -68,10 +67,6 @@ export class ReadmngCom extends Source {
             artist: artist
         }))
 
-        if (DEBUG) {
-            console.log('Viewing manga details', metadata.id, titles, image, rating, status, views, description, tagSections, author, artist)
-        }
-
         return manga
     }
 
@@ -86,33 +81,23 @@ export class ReadmngCom extends Source {
 
     getChapters(data: any, metadata: any): Chapter[] {
         let $ = this.cheerio.load(data)
-        let allChapters = $('div.panel-body')
+        let allChapters = $('ul.chp_lst')
         let chapters: Chapter[] = []
-        let chNum: number = $('div.panel-body > ul.chp_lst > li').toArray().length - 1
-
-        if (DEBUG) {
-            console.log('Data', data)
-            console.log('Chapter count', chNum)
-        }
+        let chNum: number = $('ul.chp_lst > li').toArray().length - 1
 
         for (let chapter of $('li', allChapters).toArray()) {
-            /*let id: string = $('a', chapter).attr('href')?.split('/').pop() ?? ''
+            let id: string = $('a', chapter).attr('href')?.split('/').pop() ?? ''
             let name: string = $('a > .val', chapter).text().trim() ?? ''
             let time: Date = new Date($('a > .dte', chapter).attr('title').replace('Published on', '').trim() ?? '')
 
-            if (DEBUG) {
-                console.log('Found chapter', id, name, time, chNum)
-            }
-
-                        chapters.push(createChapter({
-                            id: id,
-                            mangaId: metadata.mangaId,
-                            name: name,
-                            langCode: LanguageCode.ENGLISH,
-                            chapNum: chNum,
-                            time: time
-                        }))
-            */
+            chapters.push(createChapter({
+                id: id,
+                mangaId: metadata.id,
+                name: name,
+                langCode: LanguageCode.ENGLISH,
+                chapNum: chNum,
+                time: time
+            }))
             chNum--
         }
         return chapters
@@ -133,10 +118,6 @@ export class ReadmngCom extends Source {
         let pages: string[] = []
         for (const page of $('.page_chapter > .img-responsive').toArray()) {
             pages.push($(page).attr('src') ?? '')
-
-            if (DEBUG) {
-                console.log('Found page', $(page).attr('src') ?? '')
-            }
         }
 
         let chapterDetails = createChapterDetails({
@@ -177,10 +158,6 @@ export class ReadmngCom extends Source {
             let title = $('.title a', item).attr('title') ?? ''
             let img = $('.body a > img', item).attr('src') ?? ''
 
-            if (DEBUG) {
-                console.log('Found manga', id, title, img)
-            }
-
             manga.push(createMangaTile({
                 id: id,
                 title: createIconText({ text: title }),
@@ -194,4 +171,65 @@ export class ReadmngCom extends Source {
     }
 
     getMangaShareUrl(mangaId: string): string | null { return `${READMNGCOM_DOMAIN}/${mangaId}` }
+
+    getHomePageSectionRequest(): HomeSectionRequest[] {
+        let latestRequest = createRequestObject({ url: `${READMNGCOM_DOMAIN}/latest-releases`, method: 'GET' })
+        let hotRequest = createRequestObject({ url: `${READMNGCOM_DOMAIN}/hot-manga`, method: 'GET' })
+
+        let latestSection = createHomeSection({
+            id: 'latest_releases',
+            title: 'LATEST RELEASES'
+        })
+        let hotSection = createHomeSection({
+            id: 'hot_manga',
+            title: 'HOT MANGA'
+        })
+        return [createHomeSectionRequest({ request: latestRequest, sections: [latestSection] }), createHomeSectionRequest({ request: hotRequest, sections: [hotSection] })]
+    }
+
+    getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] {
+        if (sections[0].id == 'hot_manga') {
+            sections[0].items = this.parseHotManga(data)
+        }
+        if (sections[0].id == 'latest_releases') {
+            sections[0].items = this.parseLatestReleases(data)
+        }
+        return sections
+    }
+
+    parseLatestReleases(data: any): MangaTile[] {
+        let result: MangaTile[] = []
+        let $ = this.cheerio.load(data)
+        let pages = $('div.content-list div.style-thumbnail')
+        for (let item of $('li', pages).toArray()) {
+            let id = $('.thumbnail', item).attr('href')?.replace(`${READMNGCOM_DOMAIN}/`, '') ?? ''
+            let img = $('.thumbnail img', item).attr('src') ?? ''
+            let title = $('.thumbnail', item).attr('title')?.replace(`${READMNGCOM_DOMAIN}/`, '') ?? ''
+
+            result.push(createMangaTile({
+                id: id,
+                image: img,
+                title: createIconText({ text: title })
+            }))
+        }
+        return result
+    }
+
+    parseHotManga(data: any): MangaTile[] {
+        let result: MangaTile[] = []
+        let $ = this.cheerio.load(data)
+        let pages = $('div.style-list')
+        for (let item of $('div.box', pages).toArray()) {
+            let id = $('.body > .left > a', item).attr('href')?.replace(`${READMNGCOM_DOMAIN}/`, '') ?? ''
+            let img = $('.body > .left img', item).attr('src') ?? ''
+            let title = $('.body > .left > a', item).attr('title')?.replace(`${READMNGCOM_DOMAIN}/`, '') ?? ''
+
+            result.push(createMangaTile({
+                id: id,
+                image: img,
+                title: createIconText({ text: title })
+            }))
+        }
+        return result
+    }
 }
