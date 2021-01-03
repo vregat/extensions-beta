@@ -485,7 +485,7 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.0.4'; }
+    get version() { return '0.0.5'; }
     get name() { return 'readmng.com'; }
     get icon() { return 'logo.png'; }
     get author() { return 'Vregat'; }
@@ -516,12 +516,13 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
         let titles = [title].concat($('.dl-horizontal > dd:nth-child(2)', panel).text().split(/,|;/));
         let status = $('.dl-horizontal > dd:nth-child(4)', panel).text().toString() == 'Completed' ? paperback_extensions_common_1.MangaStatus.COMPLETED : paperback_extensions_common_1.MangaStatus.ONGOING;
         let views = +$('.dl-horizontal > dd:nth-child(10)', panel).text().split(',').join('');
-        let tagSections = [createTagSection({ id: '0', label: 'genres', tags: [] })];
+        let genres = [];
         for (let tagElement of $('.dl-horizontal > dd:nth-child(6)', panel).find('a').toArray()) {
-            let id = $(tagElement).attr('href').replace(`${READMNGCOM_DOMAIN}/`, '');
+            let id = $(tagElement).attr('href').replace(`${READMNGCOM_DOMAIN}/category/`, '');
             let text = $(tagElement).contents().text();
-            tagSections[0].tags.push(createTag({ id: id, label: text }));
+            genres.push(createTag({ id: id, label: text }));
         }
+        let genresSection = createTagSection({ id: 'genre', label: 'Genre', tags: genres });
         let description = $('.movie-detail').text().trim();
         let castList = $('ul.cast-list');
         let authorElement = $('li:contains("Author")', castList);
@@ -537,7 +538,7 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
             status: status,
             views: views,
             desc: description,
-            tags: tagSections,
+            tags: [genresSection],
             author: author,
             artist: artist
         }));
