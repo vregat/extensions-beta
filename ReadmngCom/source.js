@@ -514,7 +514,7 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
         let image = (_b = $('.img-responsive', panel).attr('src')) !== null && _b !== void 0 ? _b : '';
         let titles = [title].concat($('.dl-horizontal > dd:nth-child(2)', panel).text().split(/,|;/));
         let status = $('.dl-horizontal > dd:nth-child(4)', panel).text().toString() == 'Completed' ? paperback_extensions_common_1.MangaStatus.COMPLETED : paperback_extensions_common_1.MangaStatus.ONGOING;
-        let views = +$('.dl-horizontal > dd:nth-child(10)', panel).text().replaceAll(',', '');
+        let views = +$('.dl-horizontal > dd:nth-child(10)', panel).text().split(',').join('');
         let tagSections = [createTagSection({ id: '0', label: 'genres', tags: [] })];
         for (let tagElement of $('.dl-horizontal > dd:nth-child(6)', panel).find('a').toArray()) {
             let id = $(tagElement).attr('href').replace(`${READMNGCOM_DOMAIN}/`, '');
@@ -604,7 +604,7 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
             },
             data: {
                 'type': 'all',
-                'manga-name': query.title,
+                'manga-name': title,
                 'author-name': '',
                 'artist-name': '',
                 'status': 'both'
