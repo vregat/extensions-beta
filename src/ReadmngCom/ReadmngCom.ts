@@ -7,7 +7,7 @@ export class ReadmngCom extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '0.0.4' }
+    get version(): string { return '0.0.5' }
     get name(): string { return 'readmng.com' }
     get icon(): string { return 'logo.png' }
     get author(): string { return 'Vregat' }
@@ -32,6 +32,7 @@ export class ReadmngCom extends Source {
 
     getMangaDetails(data: any, metadata: any): Manga[] {
         let manga: Manga[] = []
+
         let $ = this.cheerio.load(data)
         let panel = $('.panel-body')
         let title = $('.img-responsive', panel).attr('alt') ?? ''
@@ -40,13 +41,15 @@ export class ReadmngCom extends Source {
         let titles = [title].concat($('.dl-horizontal > dd:nth-child(2)', panel).text().split(/,|;/))
         let status = $('.dl-horizontal > dd:nth-child(4)', panel).text().toString() == 'Completed' ? MangaStatus.COMPLETED : MangaStatus.ONGOING
         let views = +$('.dl-horizontal > dd:nth-child(10)', panel).text().split(',').join('')
-        let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] })]
 
+        let genres = []
         for (let tagElement of $('.dl-horizontal > dd:nth-child(6)', panel).find('a').toArray()) {
-            let id = $(tagElement).attr('href').replace(`${READMNGCOM_DOMAIN}/`, '')
+            let id = $(tagElement).attr('href').replace(`${READMNGCOM_DOMAIN}/category/`, '')
             let text = $(tagElement).contents().text()
-            tagSections[0].tags.push(createTag({ id: id, label: text }))
+            genres.push(createTag({ id: id, label: text }))
         }
+
+        let genresSection = createTagSection({ id: 'genre', label: 'Genre', tags: genres })
 
         let description = $('.movie-detail').text().trim()
 
@@ -67,7 +70,7 @@ export class ReadmngCom extends Source {
             status: status,
             views: views,
             desc: description,
-            tags: tagSections,
+            tags: [genresSection],
             author: author,
             artist: artist
         }))
