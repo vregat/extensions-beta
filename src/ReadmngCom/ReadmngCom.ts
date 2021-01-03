@@ -7,7 +7,7 @@ export class ReadmngCom extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '0.0.3' }
+    get version(): string { return '0.0.4' }
     get name(): string { return 'readmng.com' }
     get icon(): string { return 'logo.png' }
     get author(): string { return 'Vregat' }
