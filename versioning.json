@@ -1,1 +1,1 @@
-{"buildTime":"2021-01-03T10:11:33.796Z","sources":[{"id":"ReadmngCom","name":"readmng.com","author":"Vregat","desc":"Extension that pulls mangas from readmng.com","website":null,"version":"0.0.3","icon":"logo.png","tags":[],"websiteBaseURL":"https://www.readmng.com"}]}
+{"buildTime":"2021-01-03T11:57:18.068Z","sources":[{"id":"ReadmngCom","name":"readmng.com","author":"Vregat","desc":"Extension that pulls mangas from readmng.com","website":"https://github.com/vregat/extensions-beta","version":"0.0.4","icon":"logo.png","tags":[],"websiteBaseURL":"https://www.readmng.com"}]}

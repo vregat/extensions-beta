@@ -485,10 +485,11 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.0.3'; }
+    get version() { return '0.0.4'; }
     get name() { return 'readmng.com'; }
     get icon() { return 'logo.png'; }
     get author() { return 'Vregat'; }
+    get authorWebsite() { return 'https://github.com/vregat/extensions-beta'; }
     get description() { return 'Extension that pulls mangas from readmng.com'; }
     get hentaiSource() { return false; }
     get websiteBaseURL() { return READMNGCOM_DOMAIN; }
@@ -522,9 +523,12 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
             tagSections[0].tags.push(createTag({ id: id, label: text }));
         }
         let description = $('.movie-detail').text().trim();
-        let author = ''; //TODO
-        let artist = ''; //TODO
-        let rating = 0; //TODO
+        let castList = $('ul.cast-list');
+        let authorElement = $('li:contains("Author")', castList);
+        let author = $("li > a", authorElement).text().trim();
+        let artistElement = $('li:contains("Artist")', castList);
+        let artist = $("li > a", artistElement).text().trim();
+        let rating = +$('div.progress-bar-success').attr('title').replace('%', '');
         manga.push(createManga({
             id: metadata.id,
             titles: titles,
@@ -593,8 +597,22 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
         return chapterDetails;
     }
     searchRequest(query) {
-        var _a;
-        let title = (_a = query.title) !== null && _a !== void 0 ? _a : '';
+        var _a, _b, _c;
+        let title = ((_a = query.title) !== null && _a !== void 0 ? _a : '').split(' ').join('+');
+        let author = ((_b = query.author) !== null && _b !== void 0 ? _b : '').split(' ').join('+');
+        let artist = ((_c = query.artist) !== null && _c !== void 0 ? _c : '').split(' ').join('+');
+        let status = '';
+        switch (query.status) {
+            case 0:
+                status = 'completed';
+                break;
+            case 1:
+                status = 'ongoing';
+                break;
+            default:
+                status = 'both';
+                break;
+        }
         return createRequestObject({
             url: `${READMNGCOM_DOMAIN}/service/advanced_search`,
             method: 'POST',
@@ -605,9 +623,9 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
             data: {
                 'type': 'all',
                 'manga-name': title,
-                'author-name': '',
-                'artist-name': '',
-                'status': 'both'
+                'author-name': author,
+                'artist-name': artist,
+                'status': status
             }
         });
     }
