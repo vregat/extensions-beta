@@ -7,7 +7,7 @@ export class ReadmngCom extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '0.0.5' }
+    get version(): string { return '0.0.6' }
     get name(): string { return 'readmng.com' }
     get icon(): string { return 'logo.png' }
     get author(): string { return 'Vregat' }
@@ -16,6 +16,15 @@ export class ReadmngCom extends Source {
     get hentaiSource(): boolean { return false }
     get websiteBaseURL(): string { return READMNGCOM_DOMAIN }
     get rateLimit(): Number { return 5 }
+
+    get sourceTags(): SourceTag[] {
+        return [
+            {
+                text: "Notifications",
+                type: TagType.GREEN
+            }
+        ]
+    }
 
     getMangaDetailsRequest(ids: string[]): Request[] {
         let requests: Request[] = []
@@ -255,5 +264,52 @@ export class ReadmngCom extends Source {
             }))
         }
         return result
+    }
+
+    createFilterUpdatedMangaRequest(metadata: any): Request {
+        return createRequestObject({
+            url: `${READMNGCOM_DOMAIN}/latest-releases/${metadata.page}`,
+            metadata: metadata,
+            method: 'GET'
+        })
+    }
+
+    filterUpdatedMangaRequest(ids: any, time: Date): Request {
+        time.setHours(0, 0, 0, 0) //website does not use hours/minutes/seconds
+        let metadata = { 'ids': ids, 'time': time, page: 1 }
+        return this.createFilterUpdatedMangaRequest(metadata)
+    }
+
+    filterUpdatedManga(data: any, metadata: any): MangaUpdates {
+        let passedTime = false
+        let $ = this.cheerio.load(data)
+        let updatedManga = $('.manga_updates')
+
+        let returnObject: MangaUpdates = {
+            ids: [],
+            nextPage: undefined
+        }
+
+        for (let item of $('dl > dt', updatedManga).toArray()) {
+            let mangaInfo = $('a.manga_info', item).attr('href').replace(`${READMNGCOM_DOMAIN}/`, '')
+            let updatedDate = $('span.time', item).contents().text().split('/')
+            let parsedDate = new Date(+updatedDate[2], (+updatedDate[1]) - 1, +updatedDate[0])
+
+            passedTime = parsedDate < metadata.time
+            if (!passedTime) {
+                if (metadata.ids.includes(mangaInfo)) {
+                    returnObject.ids.push(mangaInfo)
+                }
+            } else {
+                break
+            }
+        }
+
+        if (!passedTime) {
+            metadata.page++;
+            returnObject.nextPage = this.createFilterUpdatedMangaRequest(metadata)
+        }
+
+        return createMangaUpdates(returnObject)
     }
 }
