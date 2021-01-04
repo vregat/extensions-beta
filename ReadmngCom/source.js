@@ -485,7 +485,7 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.0.5'; }
+    get version() { return '0.0.6'; }
     get name() { return 'readmng.com'; }
     get icon() { return 'logo.png'; }
     get author() { return 'Vregat'; }
@@ -494,6 +494,14 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
     get hentaiSource() { return false; }
     get websiteBaseURL() { return READMNGCOM_DOMAIN; }
     get rateLimit() { return 5; }
+    get sourceTags() {
+        return [
+            {
+                text: "Notifications",
+                type: paperback_extensions_common_1.TagType.GREEN
+            }
+        ];
+    }
     getMangaDetailsRequest(ids) {
         let requests = [];
         for (let id of ids) {
@@ -704,6 +712,46 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
             }));
         }
         return result;
+    }
+    createFilterUpdatedMangaRequest(metadata) {
+        return createRequestObject({
+            url: `${READMNGCOM_DOMAIN}/latest-releases/${metadata.page}`,
+            metadata: metadata,
+            method: 'GET'
+        });
+    }
+    filterUpdatedMangaRequest(ids, time) {
+        time.setHours(0, 0, 0, 0); //website does not use hours/minutes/seconds
+        let metadata = { 'ids': ids, 'time': time, page: 1 };
+        return this.createFilterUpdatedMangaRequest(metadata);
+    }
+    filterUpdatedManga(data, metadata) {
+        let passedTime = false;
+        let $ = this.cheerio.load(data);
+        let updatedManga = $('.manga_updates');
+        let returnObject = {
+            ids: [],
+            nextPage: undefined
+        };
+        for (let item of $('dl > dt', updatedManga).toArray()) {
+            let mangaInfo = $('a.manga_info', item).attr('href').replace(`${READMNGCOM_DOMAIN}/`, '');
+            let updatedDate = $('span.time', item).contents().text().split('/');
+            let parsedDate = new Date(+updatedDate[2], (+updatedDate[1]) - 1, +updatedDate[0]);
+            passedTime = parsedDate < metadata.time;
+            if (!passedTime) {
+                if (metadata.ids.includes(mangaInfo)) {
+                    returnObject.ids.push(mangaInfo);
+                }
+            }
+            else {
+                break;
+            }
+        }
+        if (!passedTime) {
+            metadata.page++;
+            returnObject.nextPage = this.createFilterUpdatedMangaRequest(metadata);
+        }
+        return createMangaUpdates(returnObject);
     }
 }
 exports.ReadmngCom = ReadmngCom;
