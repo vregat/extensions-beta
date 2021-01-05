@@ -7,7 +7,7 @@ export class ReadmngCom extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '0.0.6' }
+    get version(): string { return '0.0.8' }
     get name(): string { return 'readmng.com' }
     get icon(): string { return 'logo.png' }
     get author(): string { return 'Vregat' }
@@ -105,7 +105,27 @@ export class ReadmngCom extends Source {
         for (let chapter of $('li', allChapters).toArray()) {
             let id: string = $('a', chapter).attr('href')?.split('/').pop() ?? ''
             let name: string = $('a > .val', chapter).text().trim() ?? ''
-            let time: Date = new Date($('a > .dte', chapter).attr('title').replace('Published on', '').trim() ?? '')
+
+            let time = $('a > .dte', chapter).text().trim() ?? ''
+            let timeValue = +time.split(' ')[0]
+
+            let parsedDate = new Date(Date.now())
+
+            if (time.includes('Second')) {
+                parsedDate.setSeconds(parsedDate.getSeconds() - timeValue)
+            } else if (time.includes('Minute')) {
+                parsedDate.setMinutes(parsedDate.getMinutes() - timeValue)
+            } else if (time.includes('Hour')) {
+                parsedDate.setHours(parsedDate.getHours() - timeValue)
+            } else if (time.includes('Day')) {
+                parsedDate.setDate(parsedDate.getDate() - timeValue)
+            } else if (time.includes('Week')) {
+                parsedDate.setDate(parsedDate.getDate() - (timeValue * 7))
+            } else if (time.includes('Month')) {
+                parsedDate.setMonth(parsedDate.getMonth() - timeValue)
+            } else if (time.includes('Year')) {
+                parsedDate.setFullYear(parsedDate.getFullYear() - timeValue)
+            }
 
             chapters.push(createChapter({
                 id: id,
@@ -113,7 +133,7 @@ export class ReadmngCom extends Source {
                 name: name,
                 langCode: LanguageCode.ENGLISH,
                 chapNum: chNum,
-                time: time
+                time: parsedDate
             }))
             chNum--
         }
