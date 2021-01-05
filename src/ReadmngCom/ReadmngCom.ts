@@ -7,7 +7,7 @@ export class ReadmngCom extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '0.0.8' }
+    get version(): string { return '0.0.9' }
     get name(): string { return 'readmng.com' }
     get icon(): string { return 'logo.png' }
     get author(): string { return 'Vregat' }
@@ -310,15 +310,20 @@ export class ReadmngCom extends Source {
             nextPage: undefined
         }
 
-        for (let item of $('dl > dt', updatedManga).toArray()) {
+        for (let manga of $('dl', updatedManga).toArray()) {
+            let item = $('dt', manga)
             let mangaInfo = $('a.manga_info', item).attr('href').replace(`${READMNGCOM_DOMAIN}/`, '')
             let updatedDate = $('span.time', item).contents().text().split('/')
             let parsedDate = new Date(+updatedDate[2], (+updatedDate[1]) - 1, +updatedDate[0])
 
+            let numChapters = $('dd', manga).toArray().length
+
             passedTime = parsedDate < metadata.time
             if (!passedTime) {
                 if (metadata.ids.includes(mangaInfo)) {
-                    returnObject.ids.push(mangaInfo)
+                    for (let c = 0; c < numChapters; c++) {
+                        returnObject.ids.push(mangaInfo)
+                    }
                 }
             } else {
                 break
