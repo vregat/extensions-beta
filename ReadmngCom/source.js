@@ -485,7 +485,7 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
     constructor(cheerio) {
         super(cheerio);
     }
-    get version() { return '0.0.6'; }
+    get version() { return '0.0.8'; }
     get name() { return 'readmng.com'; }
     get icon() { return 'logo.png'; }
     get author() { return 'Vregat'; }
@@ -569,14 +569,37 @@ class ReadmngCom extends paperback_extensions_common_1.Source {
         for (let chapter of $('li', allChapters).toArray()) {
             let id = (_b = (_a = $('a', chapter).attr('href')) === null || _a === void 0 ? void 0 : _a.split('/').pop()) !== null && _b !== void 0 ? _b : '';
             let name = (_c = $('a > .val', chapter).text().trim()) !== null && _c !== void 0 ? _c : '';
-            let time = new Date((_d = $('a > .dte', chapter).attr('title').replace('Published on', '').trim()) !== null && _d !== void 0 ? _d : '');
+            let time = (_d = $('a > .dte', chapter).text().trim()) !== null && _d !== void 0 ? _d : '';
+            let timeValue = +time.split(' ')[0];
+            let parsedDate = new Date(Date.now());
+            if (time.includes('Second')) {
+                parsedDate.setSeconds(parsedDate.getSeconds() - timeValue);
+            }
+            else if (time.includes('Minute')) {
+                parsedDate.setMinutes(parsedDate.getMinutes() - timeValue);
+            }
+            else if (time.includes('Hour')) {
+                parsedDate.setHours(parsedDate.getHours() - timeValue);
+            }
+            else if (time.includes('Day')) {
+                parsedDate.setDate(parsedDate.getDate() - timeValue);
+            }
+            else if (time.includes('Week')) {
+                parsedDate.setDate(parsedDate.getDate() - (timeValue * 7));
+            }
+            else if (time.includes('Month')) {
+                parsedDate.setMonth(parsedDate.getMonth() - timeValue);
+            }
+            else if (time.includes('Year')) {
+                parsedDate.setFullYear(parsedDate.getFullYear() - timeValue);
+            }
             chapters.push(createChapter({
                 id: id,
                 mangaId: metadata.id,
                 name: name,
                 langCode: paperback_extensions_common_1.LanguageCode.ENGLISH,
                 chapNum: chNum,
-                time: time
+                time: parsedDate
             }));
             chNum--;
         }
